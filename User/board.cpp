@@ -25,6 +25,8 @@ function:
 #include "power_task.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "gimbal.h"
+#include "Steerwheel.h"  
 
 /*初始化完成标志*/
 u8 Init_OK = 0;
@@ -85,6 +87,9 @@ void boardALLInit(void)
 #if USE_CAMERATM
     cameraTM.init();
 #endif
+
+	gimbal.Init();
+	steer.Init();
 
 //	/*看门狗初始化-喂狗在LED*/
 	iwdgInit(4, 50);

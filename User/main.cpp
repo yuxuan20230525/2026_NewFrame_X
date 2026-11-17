@@ -79,8 +79,7 @@ History:
 
 /*通用任务的宏定义在 my_task.h 下*/
 int main(void)
-
-  {
+{
 	/*中断分组*/
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 	/*滴答定时器配置*/

@@ -42,7 +42,7 @@ void FourSteeringWheel::fourSteeringWheel_calculate(vec3f speedDef, vec4f wheelF
 	steeringSpeed.lineraVelocity2= steeringSpeed.vw *QUAN_WHEELTRACK/2.0f;
 	
 	//当三个速度向量均很小时则不进行运算
-	if ((ABS(steeringSpeed.vy) <= 50 && ABS(steeringSpeed.vx) <= 50 && ABS(steeringSpeed.vw) <= 0.3)
+	if ((ABS(steeringSpeed.vy) <= 50 && ABS(steeringSpeed.vx) <= 50 && ABS(steeringSpeed.vw) <= 0.01f)
 		||((ABS(steeringSpeed.vy + steeringSpeed.linearVelocity * sinf(PI / 4))<=0.2 &&
 			ABS(steeringSpeed.vx - steeringSpeed.linearVelocity * sinf(PI / 4))<=0.2)	))	
 	{
@@ -327,10 +327,7 @@ void FourSteeringWheel::fourSteeringWheel_calculate(vec3f speedDef, vec4f wheelF
 			outputData.last_speed_rpm.data[1]= outputData.speed_rpm.data[1];
 			outputData.last_speed_rpm.data[2]= outputData.speed_rpm.data[2];
 			outputData.last_speed_rpm.data[3]= outputData.speed_rpm.data[3];
-			
 		}
-		
-	
 }
 
 bool FourSteeringWheel::judgeWheelPrepared(vec4f angleFeedback)

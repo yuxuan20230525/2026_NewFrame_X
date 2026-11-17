@@ -414,6 +414,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\readme.txt</FilePath>
             </File>
+            <File>
+              <FileName>schedule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\schedule.h</FilePath>
+            </File>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\board.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -438,6 +448,26 @@
               <FileName>power_task.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Task\src\power_task.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Steerwheel.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\Steerwheel.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Steerwheel.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\Steerwheel.h</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\gimbal.h</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\gimbal.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -538,6 +568,11 @@
               <FileName>notch_filter.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Alg\src\notch_filter.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>fourSteeringWheel_hsh.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Alg\inc\fourSteeringWheel_hsh.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -902,6 +937,11 @@
               <FileName>camera_Timematch.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Device\src\camera_Timematch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>dbus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\dbus.h</FilePath>
             </File>
           </Files>
         </Group>

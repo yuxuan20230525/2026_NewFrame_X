@@ -29,6 +29,10 @@ function:
 #include "vofa.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "gimbal.h"
+#include "Steerwheel.h"  
+
+
 Schedule robotSchedule={0};
 
 void TDT_Loop_1000Hz(void) // 1ms执行一次
@@ -68,6 +72,8 @@ void TDT_Loop_1000Hz(void) // 1ms执行一次
 void TDT_Loop_500Hz(void) // 2ms执行一次
 {
 	Vision.vision_Send_Data();
+	steer.Update();
+	gimbal.Update();
 	MotorAllSend();
 	
 }
