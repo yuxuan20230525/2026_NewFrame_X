@@ -6,10 +6,11 @@
 
 #define USE_JUDGEMENT 0 // 是否使用裁判系统串口
 #define USE_TEMP_CTRL 1// 是否使用imu温控
-#define USE_RC 1        // 是否使用遥控器
+#define USE_RC 0        // 是否使用遥控器
 #define USE_POWER  1 // 是否使用功率
 #define BMI_NO_Init 0   // 复位后不初始化,加快复位时间
 #define USE_VISION 0   // 是否使用视觉串口
+#define USE_MTF0X  1   // 是否使用MTF0X光流测距仪，只有c板可以使用
 
 
 #if IF_USE_DJIC        																												//c板专属功能
@@ -34,8 +35,9 @@
 #define USE_VISION_Vofa 0
 #endif
 
-
-
+#if USE_VISION && USE_MTF0X//视觉串口和MTF0X串口冲突，若要使用视觉串口需要更换
+#error "USART1 cannot be shared by VISION and MTF0X"
+#endif
 
 // 已经自动修改 HSE_VALUE   PLL_M
 #endif

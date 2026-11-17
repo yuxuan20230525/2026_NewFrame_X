@@ -25,6 +25,7 @@ function:
 #include "power_task.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "mtf02.h"
 
 /*初始化完成标志*/
 u8 Init_OK = 0;
@@ -53,6 +54,10 @@ void boardALLInit(void)
 
 #if USE_VISION
 	Vision.init();
+#endif
+	
+#if USE_MTF0X
+	MT02_RC.init();
 #endif
 	
 #if USE_USB_VISION | USE_LOG

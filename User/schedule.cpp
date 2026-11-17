@@ -29,6 +29,8 @@ function:
 #include "vofa.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "mtf02.h"
+
 Schedule robotSchedule={0};
 
 void TDT_Loop_1000Hz(void) // 1ms执行一次
@@ -63,6 +65,10 @@ void TDT_Loop_1000Hz(void) // 1ms执行一次
 
 #if USE_CAMERATM
     cameraTM.run();
+#endif
+
+#if USE_MTF0X
+	MT02_RC.run();
 #endif
 }
 void TDT_Loop_500Hz(void) // 2ms执行一次

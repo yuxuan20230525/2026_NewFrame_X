@@ -85,14 +85,14 @@ extern "C" void DMA2_Stream7_IRQHandler(void)
 {
 	Vision.Handle_DMAIC_Interrupt();
 }
-
+#if USE_VISION
 extern "C" void USART1_IRQHandler(void)
 {
 	Vision.offlineFlag = 0;
 	Vision.offline_cnt = 0;
 	Vision.Handle_UARTIdle_Interrupt();
 }
-
+#endif
 #endif
 
 extern "C" void USB_REC_IQRHandler(uint8_t *Buf, uint32_t Len) // usb串口接收中断

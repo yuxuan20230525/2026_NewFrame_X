@@ -414,6 +414,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\readme.txt</FilePath>
             </File>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\board.h</FilePath>
+            </File>
+            <File>
+              <FileName>schedule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\schedule.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -902,6 +912,26 @@
               <FileName>camera_Timematch.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Device\src\camera_Timematch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>vision.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\vision.h</FilePath>
+            </File>
+            <File>
+              <FileName>mtf02.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Device\src\mtf02.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>mtf02.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\mtf02.h</FilePath>
+            </File>
+            <File>
+              <FileName>dbus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\dbus.h</FilePath>
             </File>
           </Files>
         </Group>
