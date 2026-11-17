@@ -79,8 +79,8 @@ void _RC::Dbus_Config(void)
 	USART_DeInit(USART2);
 
 	USART_InitStructure.USART_BaudRate = 100000;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	USART_InitStructure.USART_WordLength = USART_WordLength_9b;//更改8b为9b
+	USART_InitStructure.USART_StopBits = USART_StopBits_2;//停止位新增一位
 	USART_InitStructure.USART_Parity = USART_Parity_Even;
 	USART_InitStructure.USART_Mode = USART_Mode_Rx;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;

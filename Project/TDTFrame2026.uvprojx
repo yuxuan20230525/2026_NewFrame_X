@@ -190,7 +190,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>1</useUlib>
+            <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -337,10 +337,10 @@
             <v6WtE>1</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>-frtti -Wno-invalid-source-encoding </MiscControls>
+              <MiscControls>-frtti -Wno-invalid-source-encoding</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,ARM_MATH_CM4,ARM_MATH_MATRIX_CHECK,ARM_MATH_ROUNDING,USE_MAIN_CTRL_2021_PJ,USE_STM324xG_EVAL,USE_USB_OTG_FS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\ST_Lib\inc;..\User;..\DSP_Lib;..\TDT_Bsp\inc;..\TDT_Alg\inc;..\TDT_device\inc;..\TDT_Task\inc;..\USB_BOARD\inc;..\USB_USER\inc;..\USB_DRIVE\inc;..\USB_USER\inc;..\USB_CDC\inc;..\USB_LIB\inc;..\TDT_Widget\inc</IncludePath>
+              <IncludePath>..\ST_Lib\inc;..\User;..\DSP_Lib;..\TDT_Bsp\inc;..\TDT_Alg\inc;..\TDT_device\inc;..\TDT_Task\inc;..\USB_BOARD\inc;..\USB_USER\inc;..\USB_DRIVE\inc;..\USB_USER\inc;..\USB_CDC\inc;..\USB_LIB\inc;..\TDT_Widget\inc;..\Add</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -414,6 +414,21 @@
               <FileType>5</FileType>
               <FilePath>..\User\readme.txt</FilePath>
             </File>
+            <File>
+              <FileName>board.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\board.h</FilePath>
+            </File>
+            <File>
+              <FileName>cycle.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\cycle.h</FilePath>
+            </File>
+            <File>
+              <FileName>schedule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\schedule.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -438,6 +453,26 @@
               <FileName>power_task.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Task\src\power_task.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>imu_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\imu_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\led_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>power_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\power_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>task_virtual.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\task_virtual.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -902,6 +937,16 @@
               <FileName>camera_Timematch.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Device\src\camera_Timematch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\motor.h</FilePath>
+            </File>
+            <File>
+              <FileName>dbus.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Device\inc\dbus.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2395,6 +2440,21 @@
               <FileName>usbd_usr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USB_USER\src\usbd_usr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Add</GroupName>
+          <Files>
+            <File>
+              <FileName>Sentinel.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Add\Sentinel.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Sentinel.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Add\Sentinel.h</FilePath>
             </File>
           </Files>
         </Group>

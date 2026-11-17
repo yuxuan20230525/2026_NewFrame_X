@@ -29,6 +29,8 @@ function:
 #include "vofa.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "Sentinel.h"//后添加
+
 Schedule robotSchedule={0};
 
 void TDT_Loop_1000Hz(void) // 1ms执行一次
@@ -68,8 +70,8 @@ void TDT_Loop_1000Hz(void) // 1ms执行一次
 void TDT_Loop_500Hz(void) // 2ms执行一次
 {
 	Vision.vision_Send_Data();
+	sentinel.Update();
 	MotorAllSend();
-	
 }
 
 void TDT_Loop_200Hz(void) // 5ms执行一次

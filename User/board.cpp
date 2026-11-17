@@ -25,6 +25,7 @@ function:
 #include "power_task.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "Sentinel.h"
 
 /*初始化完成标志*/
 u8 Init_OK = 0;
@@ -41,7 +42,6 @@ void boardALLInit(void)
 	canInit(CAN1);
 	/*CAN2初始化*/
 	canInit(CAN2);
-
 #if USE_TEMP_CTRL
 	bmiTempCtrl.tempCtrlInit();
 #endif
@@ -85,6 +85,7 @@ void boardALLInit(void)
 #if USE_CAMERATM
     cameraTM.init();
 #endif
+	sentinel.Init();
 
 //	/*看门狗初始化-喂狗在LED*/
 	iwdgInit(4, 50);

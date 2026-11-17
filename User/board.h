@@ -6,7 +6,7 @@
 
 #define USE_JUDGEMENT 0 // 是否使用裁判系统串口
 #define USE_TEMP_CTRL 1// 是否使用imu温控
-#define USE_RC 1        // 是否使用遥控器
+#define USE_RC 0        // 是否使用遥控器
 #define USE_POWER  1 // 是否使用功率
 #define BMI_NO_Init 0   // 复位后不初始化,加快复位时间
 #define USE_VISION 0   // 是否使用视觉串口
