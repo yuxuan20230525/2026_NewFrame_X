@@ -7,13 +7,14 @@ variable :
 	——————————————————————————————————————————————————————————————————————————
 	 boardImu->My_data   boardImu->AHRS_data     两种解算方法的角度值
 	——————————————————————————————————————————————————————————————————————————
-	 imutask.forceGetOffset 置1则校准陀螺仪并重启主控
+	 imutask.forceGetOffset 置1：板载 IMU 校准零偏；HiPNUC 执行模块内部自动校平并重启主控
 	——————————————————————————————————————————————————————————————————————————
 	 gyroScaleFactor[3][3]    accScaleFactor[3][3]  陀螺仪旋转矩阵
 	——————————————————————————————————————————————————————————————————————————
 	MPU6050_def   BMI088_def   Scha634_03_def  使能某个陀螺仪
 	**/
 #include "imu_task.h"
+#include "arm_math.h"
 #include "mpu6050.h"
 #include "scha634_03.h"
 #include "bmi088.h"
@@ -22,8 +23,10 @@ variable :
 #include "cycle.h"
 #include "flash_var.h"
 #include "my_math.h"
-extern TimeSimultaneity imuTimeMatch;
+#include "dbus.h"
 ImuCalc *boardImu = nullptr;
+ImuCalc *boardImu2 = nullptr;
+ImuCalc *boardImuBackup = nullptr; // 失效降级: 热备板载 BMI088
 ImuTask imutask;
 float iwatchacc[3] , iwatchgyro[3] ; //Jscope观测IMU原始数据的接口
 float watchangle[3] , watchahrsangle[3] ; 
@@ -31,7 +34,7 @@ float temp=0;
 ImuTask::ImuTask()
 {
 	status = taskStateRun;
-	taskHz = _500hz;
+	taskHz = _1000hz;
 	forceGetOffset = 0; // 初始化为0
 }
 
@@ -44,15 +47,38 @@ void ImuTask::run()
 {
 	if (this->forceGetOffset)
 	{
-		boardImu->getOffset();
+#if (HIPNUC_def || HIPNUC_FAILOVER)
+		if (boardImu == &hipnucImu)
+		{
+			if (!deforceFlag)
+			{
+				g_hipnucDbg.calibState = 4;
+				g_hipnucDbg.calibFailReason = 6;
+				forceGetOffset = 0;
+			}
+			else if (!hipnucImu.calibrateAttitude())
+				forceGetOffset = 0;
+		}
+		else
+#endif
+		{
+			boardImu->getOffset();
+		}
 	}
 	if (this->ellipsoid_cali)
 	{
 		this->ellipsoid_fit() ;
 	}
 	/*读取*/
+#if HIPNUC_FAILOVER
+	hipnucImu.TDT_IMU_update();        // 主: 发触发/收帧/软同步
+	boardImuBackup->TDT_IMU_update();  // 热备 BMI088: 一直跑保持 AHRS 收敛, 随时可接管
+	boardImuBackup->imuValid = 1;       // BMI088 驱动本身未维护该通用健康标志
+	failoverSupervise();               // 监督, 必要时切 boardImu
+#else
 	boardImu->TDT_IMU_update();
 	//boardImu2->TDT_IMU_update();
+#endif
 	
 //	memcpy(iwatchacc, boardImu->acc.accValue.data, 3 * sizeof(float));
 //	memcpy(iwatchgyro, boardImu->gyro.dps.data, 3 * sizeof(float));
@@ -75,11 +101,101 @@ void ImuTask::run()
 }
 
 /**
+ * @brief 失效降级监督(HIPNUC_FAILOVER)
+ * @note 每拍调用。HiPNUC 连续丢帧: 先转软同步(留 HiPNUC), 再不行切板载 BMI088(锁定到重启)。
+ *       切 BMI088 时使用两颗 IMU 最后一次同时健康时的相对姿态做零点对齐。
+ */
+void ImuTask::failoverSupervise()
+{
+#if HIPNUC_FAILOVER
+	uint32_t loss = hipnucImu.lossTicks(); // 连续丢帧拍数(1ms/拍)
+	if (loss > failoverMaxLoss)
+		failoverMaxLoss = loss;
+
+	// 不能在真正切换时用“陈旧 HIP - 当前 BMI”做对齐：若失联期间机体运动，
+	// 这会把真实运动误当成零偏并永久加到 BMI 上。只保存两颗 IMU 同时健康时的坐标差。
+	if (loss == 0 && !hipnucImu.ahrs.initialising && !boardImuBackup->ahrs.initialising)
+	{
+		standbyYawOffset = hipnucImu.FusionAngle.yaw - boardImuBackup->FusionAngle.yaw;
+		standbyPitchOffset = hipnucImu.FusionAngle.pitch - boardImuBackup->FusionAngle.pitch;
+		standbyRollOffset = hipnucImu.FusionAngle.roll - boardImuBackup->FusionAngle.roll;
+		standbyAlignmentValid = true;
+	}
+	switch (failState)
+	{
+	case 0: // 硬件同步: 触发线疑似掉 -> 转软同步, 留在 HiPNUC
+		if (loss > HIPNUC_FAILOVER_SW_TICKS)
+		{
+			hipnucImu.switchToSoftwareSync(); // 发 ONTIME, 模块转周期自发 + 软件打戳
+			swSwitchCount++;
+			failState = 1;
+		}
+		break;
+		
+	case 1: // 软同步: 仍持续丢帧 -> 数据线/模块挂了, 切板载 BMI088
+		if (loss > HIPNUC_FAILOVER_BMI_TICKS)
+		{
+			const float yawDelta = standbyAlignmentValid ? standbyYawOffset : 0.0f;
+			const float pitchDelta = standbyAlignmentValid ? standbyPitchOffset : 0.0f;
+			const float rollDelta = standbyAlignmentValid ? standbyRollOffset : 0.0f;
+			// offset 保证后续拍坐标系一致；同时修正当拍已算完的 FusionAngle。
+			boardImuBackup->yawOffset += yawDelta;
+			boardImuBackup->pitchOffset += pitchDelta;
+			boardImuBackup->rollOffset += rollDelta;
+			boardImuBackup->FusionAngle.yaw += yawDelta;
+			boardImuBackup->FusionAngle.pitch += pitchDelta;
+			boardImuBackup->FusionAngle.roll += rollDelta;
+			boardImu = boardImuBackup; // 接管(下游读 boardImu 自动切到 BMI088)
+			imuDegraded = 1;           // 记录已由 BMI088 接管
+			bmiSwitchCount++;
+			failState = 2;
+		}
+		// 注: 软同步下若帧恢复, loss 归零, 留在软同步(不自动切回硬件触发, 防抖)
+		break;
+		
+	case 2:
+//		if(hipnucImu.offlineFlag == 0)
+//		{
+//			static uint8_t h_cnt = 0;
+//			if(h_cnt++ > 100)
+//			{
+//				boardImu = &hipnucImu;
+//				boardImu->yawOffset += boardImuBackup->FusionAngle.yaw - hipnucImu.FusionAngle.yaw;
+//				imuDegraded = 0;
+//				failState = 1;
+//				h_cnt = 0;
+//			}
+//		}
+		break;
+
+	default: // 2: 已锁 BMI088, 保持到重启(不自动切回 HiPNUC)
+		break;
+	}
+#endif
+}
+
+/**
  * @brief 陀螺仪初始化
  * @note 根据imu_task.h中宏定义初始化对应的陀螺仪
  */
 void ImuTask::init()
 {
+#if HIPNUC_FAILOVER
+	// 双 IMU: 主 = 外置 HiPNUC(USART1), 热备 = 板载 BMI088(SPI1)。两颗都初始化、都跑。
+	boardImu = &hipnucImu;
+	hipnucImu.setEulerSign(1.f, -1.f, 1.f); // 真机定标: URFR214 后轴对, pitch 角度方向反 -> 取反
+	hipnucImu.setGyroSign(1.f, 1.f, 1.f);  // 配套: pitch 角速度(gyro[1])同翻, 保 PD 角度/角速度同号
+	hipnucImu.setAccSign(1.f, 1.f, 1.f);   // 配套: pitch 轴 acc[1] 同翻; acc[2](垂直/落地力补)不动
+	uint8_t hipnucImuMap[3] = {1, 0, 2};
+	float hipnucImuMapSign[3] = {1.f, -1.f, 1.f};
+	hipnucImu.setAxisRemap(hipnucImuMap, hipnucImuMapSign);
+	boardImuBackup = new Bmi088(SPI1, SPI_BaudRatePrescaler_64);
+	float gyroScaleFactor[3][3] = {{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
+	float accScaleFactor[3][3]  = {{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
+	ParamToImu(boardImuBackup, gyroScaleFactor, accScaleFactor); // 备份 IMU 旋转矩阵 + flash 零偏
+	hipnucImu.TDT_ImuInit();
+	boardImuBackup->TDT_ImuInit();
+#else
 #if MPU6050_def
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 	boardImu = new Mpu6050(GPIOC, GPIO_Pin_2, GPIO_Pin_1);
@@ -105,8 +221,22 @@ void ImuTask::init()
 	float accScaleFactor[3][3] = {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
 	ParamToImu(boardImu, gyroScaleFactor, accScaleFactor);
 #endif
+#if HIPNUC_def
+	// 外置 HiPNUC HI91 (UART5 + SYNC_IN): 用全局对象(空闲中断需稳定引用), 不 new。
+	// 不调 ParamToImu: 模块自带融合, 不走 int16 零偏/缩放管线。
+	boardImu = &hipnucImu;
+	// 轴向: 模块端 URFR 214 已把贴装(X后Y右Z上)旋正; 真机定标 pitch 方向反 -> 软件取反。
+	hipnucImu.setEulerSign(1.f, -1.f, 1.f); // roll/pitch/yaw 角度符号
+	hipnucImu.setGyroSign(1.f, 1.f, 1.f);  // 配套: pitch 角速度同翻
+	hipnucImu.setAccSign(1.f, 1.f, 1.f);   // 配套: pitch 轴 acc[1] 同翻; acc[2] 垂直轴不动
+	uint8_t hipnucImuMap[3] = {1, 0, 2};
+	float hipnucImuMapSign[3] = {1.f, -1.f, 1.f};
+	hipnucImu.setAxisRemap(hipnucImuMap, hipnucImuMapSign);
+	//   gyro/acc 若还要轴重映射: hipnucImu.setAxisRemap({...}, {...});
+#endif
 
 	boardImu->TDT_ImuInit();
+#endif // HIPNUC_FAILOVER
 }
 
 void ImuTask::ParamToImu(ImuCalc *boardImu, float GyroScaleFactor[3][3], float AccScaleFactor[3][3])

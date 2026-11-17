@@ -29,6 +29,7 @@ Class:  默认配置 空闲中断 dma发送完成中断
 #include "usbd_usr.h"
 #include "usb_conf.h"
 #include "usbd_desc.h"
+
 extern CDC_IF_Prop_TypeDef VCP_fops;
 
 #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
@@ -47,7 +48,7 @@ u8 tmp_RecvBuff[200] = {0}; // 缓存区大小为最长的数据包size+1
 
 #if IF_USE_V5_V5PLUS_V6
 
-VISION Vision(GPIOC, GPIO_Pin_12, GPIO_PinSource12, GPIO_AF_UART5,
+VISION vision(GPIOC, GPIO_Pin_12, GPIO_PinSource12, GPIO_AF_UART5,
 			  GPIOD, GPIO_Pin_2, GPIO_PinSource2, GPIO_AF_UART5,
 			  UART5, 921600,
 			  DMA_Channel_4, DMA1_Stream0,
@@ -59,75 +60,63 @@ VISION Vision(GPIOC, GPIO_Pin_12, GPIO_PinSource12, GPIO_AF_UART5,
 // 发送中断，一次发送结束后触发，检测消息队列是否为空，若为空且串口空闲，则发送队列中的数据
 extern "C" void DMA1_Stream7_IRQHandler(void)
 {
-	Vision.Handle_DMAIC_Interrupt();
+	vision.Handle_DMAIC_Interrupt();
 }
 
 // 串口接收中断
 extern "C" void UART5_IRQHandler(void)
 {
-	Vision.Handle_UARTIdle_Interrupt();
+	vision.Handle_UARTIdle_Interrupt();
 }
 
 #endif
 
 #if IF_USE_DJIC
 
-VISION Vision(GPIOA, GPIO_Pin_9, GPIO_PinSource9, GPIO_AF_USART1,
-			  GPIOB, GPIO_Pin_7, GPIO_PinSource7, GPIO_AF_USART1,
-			  USART1, 460800,
-			  DMA_Channel_4, DMA2_Stream2,
-			  DMA_Channel_4, DMA2_Stream7,
-			  USART1_IRQn, DMA2_Stream7_IRQn, DMA_FLAG_TCIF7, DMA_IT_TCIF7,
-			  RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, RCC_APB2Periph_USART1, RCC_AHB1Periph_DMA2,
-			  tmp_RecvBuff, sizeof(tmp_RecvBuff));
+VISION vision  (GPIOA, GPIO_Pin_9, GPIO_PinSource9, GPIO_AF_USART1,
+				GPIOB, GPIO_Pin_7, GPIO_PinSource7, GPIO_AF_USART1,
+				USART1, 921600,
+				DMA_Channel_4, DMA2_Stream2,
+				DMA_Channel_4, DMA2_Stream7,
+				USART1_IRQn, DMA2_Stream7_IRQn, DMA_FLAG_TCIF7, DMA_IT_TCIF7,
+				RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, RCC_APB2Periph_USART1, RCC_AHB1Periph_DMA2,
+				tmp_RecvBuff, sizeof(tmp_RecvBuff));
 
+// HIPNUC_def / HIPNUC_FAILOVER 时 USART1 归 HiPNUC IMU(见 hipnuc_imu.cpp), 让出这两个 ISR 避免重复定义。
+// (Vision 对象仍构造, 供 USB 视觉用; USE_VISION=0 时其 USART1 本就不 init)				
+#if !(HIPNUC_def || HIPNUC_FAILOVER)
 extern "C" void DMA2_Stream7_IRQHandler(void)
 {
-	Vision.Handle_DMAIC_Interrupt();
+	vision.Handle_DMAIC_Interrupt();
 }
 
 extern "C" void USART1_IRQHandler(void)
 {
-	Vision.offlineFlag = 0;
-	Vision.offline_cnt = 0;
-	Vision.Handle_UARTIdle_Interrupt();
+	vision.offlineFlag = 0;
+	vision.offline_cnt = 0;
+	vision.Handle_UARTIdle_Interrupt();
 }
+#endif
 
 #endif
 
 extern "C" void USB_REC_IQRHandler(uint8_t *Buf, uint32_t Len) // usb串口接收中断
 {
-	Vision.USB_offline_cnt = 0;
-	Vision.USB_offline_Flag = 0;
+	vision.USB_offline_cnt = 0;
+	vision.USB_offline_Flag = 0;
 	memcpy(tmp_RecvBuff, Buf, Len);
-	Vision.ProcessReceivedData();
+	vision.ProcessReceivedData();
 }
 
 void VISION::vision_Send_Data()
 {
-	vision_SendStruct.header = 0xA5;
-	vision_SendStruct.type=6;
-	vision_SendStruct.ax = boardImu->acc.accValue.data[0];
-	vision_SendStruct.ay = boardImu->acc.accValue.data[2];
-	vision_SendStruct.az = boardImu->acc.accValue.data[1];
 	
-	vision_SendStruct.gx=boardImu->gyro.radps.data[0];
-	vision_SendStruct.gy=boardImu->gyro.radps.data[2];
-	vision_SendStruct.gz=boardImu->gyro.radps.data[1];
-	
-	vision_SendStruct.time_stamp = imuTimeMatch.GetImu_VisionTime(boardImu->readTime, sizeof(vision_SendStruct));
-	// 自行填充数据包内容
-
-	Append_CRC16_Check_Sum((u8 *)&vision_SendStruct, sizeof(vision_SendStruct)); // 设置CRC16校验码
-
-
-	SendMessage((uint8_t *)&vision_SendStruct, sizeof(vision_SendStruct));
-
 }
 
 // 接收处理，在接收中断时自动调用
 void VISION::ProcessReceivedData()
 {
+	const uint64_t recvTimeUs = getSysTimeUs();
 	/* 禁止全局中断*/
 	__disable_irq();
 
@@ -136,15 +125,13 @@ void VISION::ProcessReceivedData()
 	{
 		switch (tmp_RecvBuff[1]) // 判断接收数据包的type
 		{
-		case 4:
-			memcpy((u8 *)(&vision_RecvStruct), tmp_RecvBuff, sizeof(vision_RecvStruct));
-			imuTimeMatch.Get_time_diff(vision_RecvStruct.time_stamp_imu, sizeof(vision_RecvStruct));
-			break;
-		case 2:
-			break;
-		// 根据接收数据包的type进行判断和对应处理
-		default:
-			break;
+			case 2:
+				memcpy((uint8_t *)&vision_RecvStruct, tmp_RecvBuff, sizeof(vision_RecvStruct));
+				imuTimeMatch.Get_time_diff(vision_RecvStruct.time_stamp, sizeof(vision_RecvStruct), recvTimeUs);
+				break;
+			
+			default:
+				break;
 		}
 	}
 	/*  使能全局中断 */
@@ -196,10 +183,10 @@ void USART_DMA::run_1000hz() // 需要放到schedule里面运行，检查队列�
 #endif
 
 #if USE_USB_VISION
-	if (Vision.USB_offline_cnt++ > 300)
+	if (vision.USB_offline_cnt++ > 300)
 	{
-		Vision.USB_offline_Flag = 1;
-		Vision.USB_offline_cnt = 300;
+		vision.USB_offline_Flag = 1;
+		vision.USB_offline_cnt = 300;
 	}
 #endif
 }
@@ -296,11 +283,9 @@ void USART_DMA::init() // 默认使能空闲中断和dma发送完成中断
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-extern "C" void set_baudrate(uint32_t baud);
 
 void VISION::USB_init()
 {
-	set_baudrate(Vision.baudRate);
 	USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_CDC_cb, &USR_cb);
 }
 

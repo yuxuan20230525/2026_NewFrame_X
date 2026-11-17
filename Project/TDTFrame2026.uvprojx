@@ -410,15 +410,25 @@
               <FilePath>..\User\stm32f4xx_it.c</FilePath>
             </File>
             <File>
-              <FileName>readme.txt</FileName>
+              <FileName>board.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\User\readme.txt</FilePath>
+              <FilePath>..\User\board.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>TDT_Task</GroupName>
           <Files>
+            <File>
+              <FileName>gimbal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\gimbal.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\gimbal.h</FilePath>
+            </File>
             <File>
               <FileName>task_virtual.cpp</FileName>
               <FileType>8</FileType>
@@ -438,6 +448,36 @@
               <FileName>power_task.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Task\src\power_task.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>FF_test_task.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\FF_test_task.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>imu_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\imu_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>Gun.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\Gun.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Gun.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\Gun.h</FilePath>
+            </File>
+            <File>
+              <FileName>Drone.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Task\src\Drone.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Drone.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\TDT_Task\inc\Drone.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -525,6 +565,11 @@
               <FilePath>..\TDT_Alg\src\imu.cpp</FilePath>
             </File>
             <File>
+              <FileName>Quat.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Alg\src\Quat.cpp</FilePath>
+            </File>
+            <File>
               <FileName>rls.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\TDT_Alg\inc\rls.h</FilePath>
@@ -535,9 +580,14 @@
               <FilePath>..\TDT_Alg\inc\Matrix.h</FilePath>
             </File>
             <File>
-              <FileName>notch_filter.cpp</FileName>
+              <FileName>camera_Timematch.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\TDT_Alg\src\notch_filter.cpp</FilePath>
+              <FilePath>..\TDT_Alg\src\camera_Timematch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>QuaternionEKF.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Alg\src\QuaternionEKF.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -573,6 +623,11 @@
               <FileName>iic.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Bsp\src\iic.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Bsp\src\pwm.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -894,14 +949,24 @@
               <FilePath>..\TDT_Device\src\powercaculate.cpp</FilePath>
             </File>
             <File>
+              <FileName>log.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Device\src\log.cpp</FilePath>
+            </File>
+            <File>
               <FileName>remotevt03.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\TDT_Device\src\remotevt03.cpp</FilePath>
             </File>
             <File>
-              <FileName>camera_Timematch.cpp</FileName>
+              <FileName>hipnuc_imu.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\TDT_Device\src\camera_Timematch.cpp</FilePath>
+              <FilePath>..\TDT_Device\src\hipnuc_imu.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>customclient.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\TDT_Device\src\customclient.cpp</FilePath>
             </File>
           </Files>
         </Group>

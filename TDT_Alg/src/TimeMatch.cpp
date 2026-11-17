@@ -1,5 +1,5 @@
 
-// 视觉时间同步
+// 视觉时间同步，协议时间单位统一为 us
 #include "TimeMatch.h"
 
 TimeSimultaneity::TimeSimultaneity(int bit_rate)
@@ -7,22 +7,27 @@ TimeSimultaneity::TimeSimultaneity(int bit_rate)
 	this->bit_rate_ = bit_rate;
 }
 
-void TimeSimultaneity::Get_time_diff(double vision_time, int sizeofRecvStruct) // 获取视觉时间和主控时间差值
+void TimeSimultaneity::Get_time_diff(double vision_time_us, int recv_size, uint64_t mcu_receive_time_us)
 {
-	time_diff = getSysTimeUs() / 1e6f - vision_time - (double)10.0 * sizeofRecvStruct / bit_rate_;
+	double transfer_delay_us = 0.0;
+	if (bit_rate_ > 0)
+		transfer_delay_us = 10.0 * recv_size * 1e6 / bit_rate_;
+
+	time_diff_us_ = (double)mcu_receive_time_us - vision_time_us - transfer_delay_us;
 }
 
-double TimeSimultaneity::GetSimuTime_s() // 返回同步后的mcu时间(s)  （校准后）
+double TimeSimultaneity::GetSimuTime_us()
 {
-	return getSysTimeUs() / 1e6f - time_diff;
+	return (double)getSysTimeUs() - time_diff_us_;
 }
 
-double TimeSimultaneity::GetSimuTime_s(double mcuTime) // 将mcu时间转化为视觉时间 单位（s）
+double TimeSimultaneity::GetSimuTime_us(double mcu_time_us)
 {
-	return mcuTime - time_diff;
+	return mcu_time_us - time_diff_us_;
 }
 
-double TimeSimultaneity::GetImu_VisionTime(double imuTime, int sizeofSendStruct)
+double TimeSimultaneity::GetImu_VisionTime(double imu_time_s, int send_size)
 {
-	return GetSimuTime_s(imuTime);
+	(void)send_size;
+	return GetSimuTime_us(imu_time_s * 1e6);
 }

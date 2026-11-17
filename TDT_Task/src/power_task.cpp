@@ -1,6 +1,7 @@
 #include "power_task.h"
 #include "powercaculate.h"
 
+#if USE_POWER
 PidParam diaMotorInner;
 PidParam diaMotorOuter;
 
@@ -50,7 +51,7 @@ void Power_Task::init()
 	powerTask.init();
 }
 
-
+#endif
 
 
 

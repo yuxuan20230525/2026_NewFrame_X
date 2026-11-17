@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<JScopeProject>
+    <FileVersion major="1" minor="1" />
+    <Project>
+        <Configuration>
+            <JLink>
+                <Options Connection="1" IsRTTSession="0" IsRTTWithTimeStamp="0" SamplingPeriod="100" SerialNo="0" JTAG_IRPre="0" JTAG_DRPre="0" IP="" TargetDevice="Cortex-M4" TargetInterface="JTAG" InterfaceSpeed="4000" />
+            </JLink>
+            <ElfFile Name="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project\Objects\TDT-Frame-2026.axf" />
+            <Scope>
+                <Options TimeResolutionUs="1000000" />
+            </Scope>
+            <Trigger>
+                <Options Level="0" Symbol="error" On="0" Auto="0" Rise="0" Fall="0" />
+            </Trigger>
+        </Configuration>
+        <Windows>
+            <Graph Show="1" />
+            <Watch Show="1" />
+        </Windows>
+        <SelectedSymbols>
+            <Symbol>
+                <Options Name="setPos" Address="0x200024E8" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="-1.38793e+06" YMaxSampled="-1.38793e+06" YAvgSampled="-1.38793e+06" Offset="4" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="500000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.setPos" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20002568" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="8" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.gunMotor[0].&lt;Inherited&gt;.pidInner.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20002790" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="12" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.gunMotor[1].&lt;Inherited&gt;.pidOuter.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20002950" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="16" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.gunMotor[2].&lt;Inherited&gt;.pidOuter.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="base_top_pitch_offset" Address="0x20001CDC" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="20" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.base_top_pitch_offset" />
+            </Symbol>
+            <Symbol>
+                <Options Name="base_bottom_pitch_offset" Address="0x20001CE4" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="24" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.base_bottom_pitch_offset" />
+            </Symbol>
+        </SelectedSymbols>
+    </Project>
+</JScopeProject>

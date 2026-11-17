@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-31",
+  "old_project": "D:\\stm32project\\.工具_Github\\2026_NewFrame_无人机云台",
+  "new_framework_template": "C:\\Users\\RYX\\Desktop\\2026_Drone_mainControl",
+  "new_project": "D:\\stm32project\\.工具_Github\\2026_Drone_mainControl",
+  "old_source_sha256": {
+    "TDT_Task/inc/gimbal.h": "f20299b4a6aa6c6eb5f5fdf25af6579fdb7ff2287a716eb7405cc977a1e63e63",
+    "TDT_Task/src/gimbal.cpp": "552c017f0d317cbc20facd2d467e1a2e418e6321054d8f1a77e1a5918b0a364e"
+  },
+  "excluded_template_directories": [
+    "Project/Listings",
+    "Project/Objects"
+  ],
+  "changes": {
+    "TDT_Task/inc/gimbal.h": {
+      "reason": "Port current user-written gimbal module from old project",
+      "before_sha256": null,
+      "after_sha256": "f20299b4a6aa6c6eb5f5fdf25af6579fdb7ff2287a716eb7405cc977a1e63e63"
+    },
+    "TDT_Task/src/gimbal.cpp": {
+      "reason": "Use the new framework MHF7015 model for the two confirmed MHF7015 V3 motors",
+      "before_sha256": null,
+      "after_sha256": "1709a249a971452c364557ab35a1202b5dc2dd579e568b5264b59ed068682ccb"
+    },
+    "TDT_Device/inc/dbus.h": {
+      "reason": "Keep FS-i6X receiver in SBUS mode",
+      "before_sha256": "523075a4fd17ec7ee625ce80e0d2225d2b537e31af32503cc4a1d70404611186",
+      "after_sha256": "9c21fdb5ebd7fec86d5262408ff2fe0ef75dd74863a976822f934226d7469287"
+    },
+    "TDT_Device/src/dbus.cpp": {
+      "reason": "Retain old RC-offline behavior: force zero-current instead of VT03 fallback",
+      "before_sha256": "abb14e03303a1bfd69386dbc7226562fe676ae36089ba5f216f2ead200bcb1c3",
+      "after_sha256": "65e219b99d7696117efbc380640260e459ccdca7962d85ec0d9b8120c1484d9e"
+    },
+    "TDT_Task/inc/imu_task.h": {
+      "reason": "Disable HiPNUC/BMI088 takeover so MPU6050 selection takes effect",
+      "before_sha256": "c8db17eaa08120e3e33795b0e5f3693c1c2b43d381dbc60592d70e1a1452738e",
+      "after_sha256": "4da27e17708a5fc16fc649ff4b20db8b6c0573a8311160977e93bf8bec6ac8fe"
+    },
+    "User/board.cpp": {
+      "reason": "Initialize gimbal after task/IMU setup, as in the old project",
+      "before_sha256": "a4ece90ae29fd35c15dde399502aeb26809f3b7cf59ba34b5f85125ce4d9350f",
+      "after_sha256": "72958ab369e26da39aef4a392b48a38840d747e28f7c6f9fe91a64f86c3f41be"
+    },
+    "Project/TDTFrame2026.uvprojx": {
+      "reason": "Add migrated gimbal source/header to Keil project",
+      "before_sha256": "8bce2eb9f72de73f5819d56102efa02d7f449fdacc34e0cb834beee249d680b0",
+      "after_sha256": "3ff18f2f236ec7b9bdcab6c0cda0dc5fcce3b0add7e69b3ab5cf21b3094343f9"
+    },
+    "2026_NewFrame.code-workspace": {
+      "reason": "Open this migrated project instead of the unrelated original sibling directory",
+      "before_sha256": "b2ed7eff8d23d8c20012b8cdd5ad7abeb5be88e5e949124657319087f4a60eff",
+      "after_sha256": "69e7b37e2ebdaf8fc313bf6cb74882fed65895e5f853736e65759bafb333bc6b"
+    },
+    "README.md": {
+      "reason": "Link migration report from project entry documentation",
+      "before_sha256": "be74178e0f153d2809b10d8200aac21b34380bb8346fe4b65e7fb8de08b2d858",
+      "after_sha256": "cfde9a2e9399b5868c56b076dcfa93284ac5b89e1a8e3c3e85296c78d42a226b"
+    }
+  },
+  "built": false,
+  "flashed": false,
+  "old_project_deleted": false,
+  "comparison_summary": {
+    "新框架新增": 42,
+    "内容不同": 55,
+    "仅换行或BOM不同": 245,
+    "相同": 4,
+    "仅旧工程存在": 6
+  },
+  "validation": {
+    "keil_registered_files": 123,
+    "missing_registered_files": 0,
+    "xml_valid": true,
+    "gimbal_source_registration_count": 1,
+    "gimbal_header_registration_count": 1,
+    "old_source_unchanged": true,
+    "compiled": false,
+    "flashed": false,
+    "unexpected_base_modifications": [],
+    "user_gimbal_logic_preserved_except_model_identifier": true,
+    "nonzero_control_logic_added": false,
+    "migration_metadata_preimages_use_original_template": true,
+    "original_period_config_restored": true,
+    "restored_files_equal_desktop_template": true
+  },
+  "user_requested_restorations": {
+    "date": "2026-10-31",
+    "reason": "Keep original new-framework MHF7015 period and calculation parameter types",
+    "files": {
+      "TDT_Device/src/motor.cpp": "a9cc7bf0114fa29718e5ffb83bb89d47a6d395300fc6b1fed01c681df36b19a3",
+      "TDT_Alg/inc/can_calculate.h": "96fe84d5da1539a7626e7544f788cc965b200a0acfc1d3c47162b068fabef1fc",
+      "TDT_Alg/src/can_calculate.cpp": "aff2b9a0508f7d9de2766db59ea7d9dde4159c7d91ec3bd5456ca81708896de0"
+    },
+    "MHF7015_period_table_value": 524287,
+    "calculation_period_parameter_type": "uint16_t"
+  }
+}

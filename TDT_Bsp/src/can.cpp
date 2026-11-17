@@ -329,8 +329,20 @@ void CAN2_RX0_IRQHandler(void)
 #endif
 		switch (Can2RxMsg.StdId)
 		{
-		default:
-			break;
+			case 0x401:
+			case 0x402:
+			case 0x403:
+			case 0x404:
+			case 0x405:
+			case 0x406:
+			case 0x407:
+			case 0x408:
+			case 0x409:
+				//com_Task.canHandle(&Can2RxMsg);
+				break;
+			
+			default:
+				break;
 		}
 		CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
 	}

@@ -97,6 +97,9 @@ public:
 	void rstCount();
 	void remote_data_process_advanced(void);
 	_KeyVt Key;			 //当前值
+	_KeyVt LastKey;			 //当前值
+	_KeyVt KeyTick;			 //当前值
+	_KeyVt KeyPress;			 //当前值
 	int16_t CH[4];
 };
 

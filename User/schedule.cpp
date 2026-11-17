@@ -12,7 +12,7 @@ function:
 #include "imu_task.h"
 #include "led_task.h"
 #include "judgement.h"
-#include "Motor.h"
+#include "motor.h"
 #include "pwm.h"
 #include "adc.h"
 #include "can.h"
@@ -25,15 +25,22 @@ function:
 #include "lk_motor.h"
 #include "buzzer.h"
 #include "oled.h"
-#include "Motor.h"
+#include "motor.h"
 #include "vofa.h"
+#include "dbus.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "log.h"
+#include "customclient.h"
+//#include "gimbal.h"
+//#include "Gun.h"
+#include "Drone.h"
+
 Schedule robotSchedule={0};
 
 void TDT_Loop_1000Hz(void) // 1ms执行一次
 {	
-	Vision.run_1000hz();
+	vision.run_1000hz();
 	
 #if USE_JUDGEMENT
 	judgement.run_1000hz();
@@ -50,7 +57,7 @@ void TDT_Loop_1000Hz(void) // 1ms执行一次
 #if USE_RC
 	RC.run_1000Hz();
 #else
-	deforceFlag = 0;
+//	deforceFlag = 0;
 #endif
 
 #if USE_POWER
@@ -67,17 +74,42 @@ void TDT_Loop_1000Hz(void) // 1ms执行一次
 }
 void TDT_Loop_500Hz(void) // 2ms执行一次
 {
-	Vision.vision_Send_Data();
+	vision.vision_Send_Data();
+//	gimbal.Update();
+//	gun.Update();
+	drone.Update();
 	MotorAllSend();
 	
+	if(RC.SW1Tick == RCS::Mid_Down && RC.Key.SW[1] == RCS::Down)
+		softwareReset();
 }
+
+bool manualSaveZeroFlag = 0;
 
 void TDT_Loop_200Hz(void) // 5ms执行一次
 {
+	
+	if((RC.Key.SW[0] == RCS::Down && RC.Key.SW[1] == RCS::Down && RC.Key.CH[0] <= -600 && RC.Key.CH[1] <= -600 && RC.Key.CH[11 >= 600]) || manualSaveZeroFlag)
+	{
+		for(uint8_t i = 0; i < valid_dmmotorNum; i++)
+			dmList[i]->saveZero();
+		for(uint8_t i = 0; i < valid_lkmotorNum; i++)
+			lkList[i]->saveZero();
+		
+		manualSaveZeroFlag = 0;
+	}
 }
 
 void TDT_Loop_100Hz(void) // 10ms执行一次
 {
+#if USE_LOG
+	log_task.run();
+	#endif
+#if !USE_JUDGEMENT && !USE_Judgement_Vofa
+	// 雷达遥测 → 0x0310 图传链路 → 自定义客户端 (数据入口 Radar* 由外部 CAN 接收填充)
+	if(gCustomClientMode == CC_MODE_TELEMETRY)
+		RadarTelemetrySend();
+#endif
 }
 
 void TDT_Loop_50Hz(void) // 20ms执行一次

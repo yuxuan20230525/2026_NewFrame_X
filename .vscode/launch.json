@@ -1,0 +1,102 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "JLink Flash and Debug",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "jlink",
+      "device": "STM32F407IG",
+      "interface": "swd",
+      "preLaunchTask": "Build",
+      "runToEntryPoint": "main",
+      "executable": "${workspaceFolder}/cmake_build/TDTFrame.elf",
+      "overrideLaunchCommands": [
+        "monitor reset halt",
+        "monitor exec EnableEraseAllFlashBanks",
+        "monitor flash erase sector 0 11",
+        "load ${workspaceFolder}/cmake_build/TDTFrame.elf",
+        "monitor reset halt"
+      ],
+      "JLinkGDBServer": {
+        "serial": ""
+      },
+      "liveWatch": {
+        "enabled": true,
+        "samplesPerSecond": 4
+      },
+      "showDevDebugOutput": false,
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "arm-none-eabi-gdb"
+    },
+    {
+      "name": "Flash and Debug",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "openocd",
+      "device": "STM32F407IGHx",
+      "configFiles": [
+        "interface/stlink-v2-1.cfg",
+        "target/stm32f4x.cfg"
+      ],
+      "searchDir": [],
+      "preLaunchTask": "Build",
+      "runToEntryPoint": "main",
+      "executable": "${workspaceFolder}/cmake_build/TDTFrame.elf",
+      "openOCDCommands": [
+        "monitor reset halt",
+        "monitor flash write_image erase unlock ${workspaceFolder}/cmake_build/TDTFrame.bin 0x08000000",
+        "monitor reset halt"
+      ],
+      "overrideLaunchCommands": [
+        "monitor reset halt",
+        "load ${workspaceFolder}/cmake_build/TDTFrame.elf",
+        "monitor reset halt"
+      ],
+      "showDevDebugOutput": false,
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "arm-none-eabi-gdb",
+      "miDebuggerArgs": ""
+    },
+    {
+      "name": "Debug (No Flash)",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "openocd",
+      "device": "STM32F407IGHx",
+      "configFiles": [
+        "interface/stlink-v2-1.cfg",
+        "target/stm32f4x.cfg"
+      ],
+      "runToEntryPoint": "main",
+      "executable": "${workspaceFolder}/cmake_build/TDTFrame.elf",
+      "overrideLaunchCommands": [
+        "monitor reset halt",
+        "load ${workspaceFolder}/cmake_build/TDTFrame.elf",
+        "monitor reset halt"
+      ],
+      "showDevDebugOutput": false,
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "arm-none-eabi-gdb"
+    },
+    {
+      "name": "Attach (Debug Running)",
+      "type": "cortex-debug",
+      "request": "attach",
+      "servertype": "openocd",
+      "device": "STM32F407IGHx",
+      "configFiles": [
+        "interface/stlink-v2-1.cfg",
+        "target/stm32f4x.cfg"
+      ],
+      "executable": "${workspaceFolder}/cmake_build/TDTFrame.elf",
+      "showDevDebugOutput": false,
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "arm-none-eabi-gdb"
+    }
+  ]
+}

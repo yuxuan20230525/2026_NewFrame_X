@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "cmake --build cmake_build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "CMake + Ninja 编译"
+    },
+    {
+      "label": "Clean Build",
+      "type": "shell",
+      "command": "cmake --build cmake_build --clean-first",
+      "problemMatcher": ["$gcc"],
+      "detail": "清理并重新编译"
+    },
+    {
+      "label": "Flash",
+      "type": "shell",
+      "command": "cmake --build cmake_build --target flash",
+      "dependsOn": ["Build"],
+      "problemMatcher": [],
+      "detail": "烧录固件到芯片"
+    },
+    {
+      "label": "Configure",
+      "type": "shell",
+      "command": "cmake -B cmake_build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake",
+      "problemMatcher": [],
+      "detail": "CMake 初始配置 (首次或改了 CMakeLists.txt 后执行)"
+    }
+  ]
+}

@@ -27,6 +27,7 @@ History:
 #include "task_virtual.h"
 #include "KeyProcess.h"
 #include "judgement.h"
+#include "dbus.h"
 
 
 /**
@@ -162,11 +163,11 @@ void _RCVT03::run_1000Hz()
 		dbusOnlineFlagvt03=0;
 	else
 		dbusOnlineFlagvt03=1;
-	if(dbusOnlineFlagvt03)
+	if(dbusOnlineFlagvt03 && updated)
 	{
 		handleData();
 		updated = 0;
-		//RCVT03.taskSchedule();
+		RCVT03.taskSchedule();
 		return;
 	}
 	if (timeIntervalFrom(updateTime) > 500000) //500ms
@@ -177,11 +178,14 @@ void _RCVT03::run_1000Hz()
 		{
 			//清除旧数据
 			memset(&Key, 0, sizeof(Key));
+			memset(&LastKey, 0, sizeof(LastKey));
+			memset(&KeyTick, 0, sizeof(KeyTick));
+			memset(&KeyPress, 0, sizeof(KeyPress));
 			//仍然进行按键处理，不过所有键松开
 			KeyProcess::keyHandle(0);
 			deforceFlagvt03 = 1;
 			//仍然进行任务调度
-			//taskSchedule();
+			taskSchedule();
 		}
 		dbusOnlineFlagvt03 = 0;
 	}
@@ -260,40 +264,77 @@ void _RCVT03::remoteUpdate()
   */
 void _RCVT03::taskSchedule()
 {
-	//▲ 如果到脱力键，发送通知到紧急停止任务，不带通知值，且不保留接受任务的通知值，接受任务的通知值加一
-	if(Key.pause&&!deforceFlag)
-		pauseCnt++;
-	else
-		pauseCnt=0;
-	if(pauseCnt==100)
+//	//▲ 如果到脱力键，发送通知到紧急停止任务，不带通知值，且不保留接受任务的通知值，接受任务的通知值加一
+//	if(Key.pause&&!deforceFlag)
+//		pauseCnt++;
+//	else
+//		pauseCnt=0;
+//	if(pauseCnt==100)
+//	{
+//		if(deforceFlagvt03==1)
+//			deforceFlagvt03=0;
+//	}
+//	if((pauseCnt==1)&&!deforceFlagvt03)
+//	{
+//		if(deforceFlagvt03==0)
+//			deforceFlagvt03=1;
+//	}
+//	if (!deforceFlagvt03)
+//	{ //调用其他任务的脱力回调函数
+//		for (int i = 0; i < taskControl.taskNum; i++)
+//		{
+//			taskControl.taskList[i]->deforceCallBack();
+//		}
+//		//执行重启计数函数，等待特定的重启操作后将重启
+//		rstCount();
+//	}
+//	//脱力状态解除，恢复挂起的任务，执行一些初始化
+//	else
+//	{
+//			imutask.forceGetOffset = 0;
+//			//调用其他任务的脱力回调函数
+//			for (int i = 0; i < taskControl.taskNum; i++)
+//			{
+//				taskControl.taskList[i]->deforceCancelCallBack();
+//			}
+//	}
+	
+	if(dbusOfflineFlag)
 	{
-		if(deforceFlagvt03==1)
-			deforceFlagvt03=0;
-	}
-	if((pauseCnt==1)&&!deforceFlagvt03)
-	{
-		if(deforceFlagvt03==0)
-			deforceFlagvt03=1;
-	}
-	if (!deforceFlagvt03)
-	{ //调用其他任务的脱力回调函数
-		for (int i = 0; i < taskControl.taskNum; i++)
+		if(Key.mode_sw == 0)
 		{
-			taskControl.taskList[i]->deforceCallBack();
-		}
-		//执行重启计数函数，等待特定的重启操作后将重启
-		rstCount();
-	}
-	//脱力状态解除，恢复挂起的任务，执行一些初始化
-	else
-	{
-			imutask.forceGetOffset = 0;
-			//调用其他任务的脱力回调函数
-			for (int i = 0; i < taskControl.taskNum; i++)
-			{
-				taskControl.taskList[i]->deforceCancelCallBack();
+			if (!deforceFlagvt03)
+			{ // 调用其他任务的脱力回调函数
+				for (int i = 0; i < taskControl.taskNum; i++)
+				{
+					taskControl.taskList[i]->deforceCallBack();
+				}
 			}
+			deforceFlagvt03 = 1;
+			// 执行重启计数函数，等待特定的重启操作后将重启
+			rstCount();
+		}
+
+		// 脱力状态解除，恢复挂起的任务，执行一些初始化
+		else
+		{
+			if (deforceFlagvt03)
+			{
+				imutask.forceGetOffset = 0;
+				// 调用其他任务的脱力回调函数
+				for (int i = 0; i < taskControl.taskNum; i++)
+				{
+					taskControl.taskList[i]->deforceCancelCallBack();
+				}
+			}
+			deforceFlagvt03 = 0;
+			// 清除相关隐患变量
+			// 轮询所有使能电机
+		}
 	}
+	else
+		deforceFlagvt03 = 1;
+	
 }
 
 
@@ -362,11 +403,23 @@ void _RCVT03::remote_data_process_advanced(void)
                         memcpy(&RCVT03.Key, packet_buffer, REMOTE_PACKET_SIZE);
                         remote_data_ready = 1;
                         remote_packet_count++;
+						// 按键跳变检测-异或操作，相同为零，不同为一，那么跳变的位就为1，再赋值给单独的变量
+						KeyTick.keyValue = Key.keyValue ^ LastKey.keyValue;
+
+						// 按下值检测-跳变值并上上一次值的取反-那么跳变且上一次为0的键为1
+						KeyPress.keyValue = KeyTick.keyValue & (~LastKey.keyValue);
+
+						/*▲ 根据偏移值，定位按键变量，并赋值*/
+						*((uint16_t *)&(Key.keyValue)) = Key.keyValue;
+						*((uint16_t *)&(KeyTick.keyValue)) = KeyTick.keyValue;
+						*((uint16_t *)&(KeyPress.keyValue)) = KeyPress.keyValue;
+						
+						memcpy(&LastKey, &Key, sizeof(Key));
                     } else {
                         remote_error_count++;
                     }
                     packet_state = 0;  // 准备接收下一包
-                }
+                }			
             } else {
                 // 异常情况，重置
                 packet_state = 0;
@@ -380,8 +433,9 @@ void _RCVT03::remote_data_process_advanced(void)
 
 
 
-
-
+uint64_t last_time;
+uint64_t now_time;
+uint64_t time_gap;
 
 
 /**
@@ -396,6 +450,11 @@ extern "C" void DMA2_Stream1_IRQHandler(void)
 		DMA_ClearFlag(DMA2_Stream1, DMA_IT_TCIF1);
 		DMA_ClearITPendingBit(DMA2_Stream1, DMA_IT_TCIF1);
 		dbusOnlineCnt=0;
+		RCVT03.updateTime = getSysTimeUs();
+		RCVT03.updated = 1;
+		now_time = getSysTimeUs();
+		time_gap = now_time - last_time;
+		last_time = now_time;
 	}
 }
 

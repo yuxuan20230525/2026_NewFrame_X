@@ -62,7 +62,6 @@ void TaskControl::AllTask_Init(void)
 {
 	for (u8 i = 0; i < taskNum; i++)
 	{
-		if (taskList[i]->status == taskStateRun)
 			taskList[i]->init();
 	}
 }

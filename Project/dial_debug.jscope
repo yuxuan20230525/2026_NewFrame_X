@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<JScopeProject>
+    <FileVersion major="1" minor="1" />
+    <Project>
+        <Configuration>
+            <JLink>
+                <Options Connection="1" IsRTTSession="0" IsRTTWithTimeStamp="0" SamplingPeriod="100" SerialNo="0" JTAG_IRPre="0" JTAG_DRPre="0" IP="" TargetDevice="Cortex-M4" TargetInterface="JTAG" InterfaceSpeed="4000" />
+            </JLink>
+            <ElfFile Name="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project\Objects\TDT-Frame-2026.axf" />
+            <Scope>
+                <Options TimeResolutionUs="1000000" />
+            </Scope>
+            <Trigger>
+                <Options Level="0" Symbol="setPos" On="0" Auto="0" Rise="0" Fall="0" />
+            </Trigger>
+        </Configuration>
+        <Windows>
+            <Graph Show="1" />
+            <Watch Show="1" />
+        </Windows>
+        <SelectedSymbols>
+            <Symbol>
+                <Options Name="setPos" Address="0x20002530" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="209" GraphColorBlue="21" YMinSampled="-1.77379e+06" YMaxSampled="2.28516" YAvgSampled="-430803" Offset="4" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="500000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.setPos" />
+            </Symbol>
+            <Symbol>
+                <Options Name="offsetLockTime" Address="0x2000253A" Type="short" TypeID="11" Size="2" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="0" YMaxSampled="198" YAvgSampled="0.212859" Offset="8" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="50" MaxValue="32767" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.offsetLockTime" />
+            </Symbol>
+            <Symbol>
+                <Options Name="bulletSpeed" Address="0x2000256C" Type="float" TypeID="1" Size="4" GraphColorRed="237" GraphColorGreen="96" GraphColorBlue="255" YMinSampled="0" YMaxSampled="24.1135" YAvgSampled="17.8227" Offset="10" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="5" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.bulletSpeed" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x200025B0" Type="float" TypeID="1" Size="4" GraphColorRed="147" GraphColorGreen="255" GraphColorBlue="165" YMinSampled="-8400" YMaxSampled="8365" YAvgSampled="31.3588" Offset="14" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="2000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.gunMotor[0].&lt;Inherited&gt;.pidInner.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20002C18" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="-3520.25" YMaxSampled="1308.75" YAvgSampled="-125.473" Offset="18" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.dialMotor.&lt;Inherited&gt;.pidOuter.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="speed" Address="0x20002C5C" Type="float" TypeID="1" Size="4" GraphColorRed="2" GraphColorGreen="255" GraphColorBlue="120" YMinSampled="-14682" YMaxSampled="8551" YAvgSampled="-463.143" Offset="22" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="5000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.dialMotor.&lt;Inherited&gt;.canInfo.speed" />
+            </Symbol>
+            <Symbol>
+                <Options Name="trueCurrent" Address="0x20002C60" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="255" GraphColorBlue="90" YMinSampled="-10945" YMaxSampled="5546" YAvgSampled="-266.891" Offset="26" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="5000" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".gun.dialMotor.&lt;Inherited&gt;.canInfo.trueCurrent" />
+            </Symbol>
+            <Symbol>
+                <Options Name="speedError" Address="0x20003F40" Type="unsigned int" TypeID="8" Size="4" GraphColorRed="255" GraphColorGreen="242" GraphColorBlue="243" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="30" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gun.cpp" DrawStyle="0" NameWithParents=".speedError" />
+            </Symbol>
+            <Symbol>
+                <Options Name="beat" Address="0x2000064C" Type="unsigned char" TypeID="14" Size="56" GraphColorRed="187" GraphColorGreen="255" GraphColorBlue="250" YMinSampled="0" YMaxSampled="0" YAvgSampled="0" Offset="34" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="0" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_device/src\vision.cpp" DrawStyle="0" NameWithParents=".vision_RecvStruct.beat" />
+            </Symbol>
+        </SelectedSymbols>
+    </Project>
+</JScopeProject>

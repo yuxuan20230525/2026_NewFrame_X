@@ -1,23 +1,23 @@
-// Widget ÀàµÄÊµÏÖ
-#include "widget.h"
+// Widget ï¿½ï¿½ï¿½Êµï¿½ï¿½
+#include "Widget.h"
 Widget *Widget::currentWidget = nullptr;
 u8 Widget::keyStatus = 0;
 
-// °´¼üÉ¨Ãèº¯Êý
+// ï¿½ï¿½ï¿½ï¿½É¨ï¿½èº¯ï¿½ï¿½
 void Widget::key_Scan() {
-    // ¼ÙÉè°´¼üÉ¨ÃèÒÑ¾­ÊµÏÖ
-    // ¸üÐÂ keyStatus
-    keyStatus = 0;  // ¸üÐÂ°´¼ü×´Ì¬£¬°´¼üÉ¨ÃèÊµÏÖ¿ÉÒÔ¸ù¾ÝÓ²¼þÇé¿öµ÷Õû
+    // ï¿½ï¿½ï¿½è°´ï¿½ï¿½É¨ï¿½ï¿½ï¿½Ñ¾ï¿½Êµï¿½ï¿½
+    // ï¿½ï¿½ï¿½ï¿½ keyStatus
+    keyStatus = 0;  // ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¨ï¿½ï¿½Êµï¿½Ö¿ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (keyStatus & KEY_UP) btnUp_Press();
     if (keyStatus & KEY_DOWN) btnDown_Press();
     if (keyStatus & KEY_OK) btnOK_Press();
     if (keyStatus & KEY_CANCEL) btnCancel_Press();
 }
 
-// ´¦Àí Cancel °´Å¥°´ÏÂÊÂ¼þ
+// ï¿½ï¿½ï¿½ï¿½ Cancel ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
 void Widget::btnCancel_Press()
 {
-    backToParent(); // ·µ»Øµ½¸¸×é¼þ
+    backToParent(); // ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 
@@ -27,56 +27,56 @@ void Menu::addItem(WidgetDescription *item)
 {
     if (itemCount < MAX_MENU_ITEMS)
     {
-        itemList[itemCount++] = item;  // Ìí¼Ó²Ëµ¥Ïî
+        itemList[itemCount++] = item;  // ï¿½ï¿½ï¿½Ó²Ëµï¿½ï¿½ï¿½
     }
 }
 
 void Menu::show()
 {
-//    auto oldDrawRect = oled.setDrawRect(); // ±£´æµ±Ç°»æÖÆÇøÓò
-//    if (widgetTitle != 0)  // Èç¹û²Ëµ¥±êÌâ´æÔÚ
+//    auto oldDrawRect = oled.setDrawRect(); // ï¿½ï¿½ï¿½æµ±Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    if (widgetTitle != 0)  // ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //    {
-//        oled.FillRectangle(0, menuShowRowFrom * 8, 127, (menuShowRowFrom + 1) * 8 - 1, 0); // Çå³ý±êÌâÇøÓò
-//        oled.ShowString(0, menuShowRowFrom * 8, (u8 *)widgetTitle, 8, 1);  // ÏÔÊ¾±êÌâ
+//        oled.FillRectangle(0, menuShowRowFrom * 8, 127, (menuShowRowFrom + 1) * 8 - 1, 0); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//        oled.ShowString(0, menuShowRowFrom * 8, (u8 *)widgetTitle, 8, 1);  // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
 //    }
 
-//    oled.DrawLine(0, (menuShowRowFrom + 1) * 8, 128, (menuShowRowFrom + 1) * 8 - 1, 1); // »æÖÆ·Ö¸ôÏß
-//    oled.setDrawRect(0, (menuShowRowFrom + 1) * 8, 128, (menuShowRowFrom + 1 + menuShowRowNum) * 8 - 1); // ÉèÖÃ»æÖÆÇøÓò
-//    oled.FillRectangle(0, 0, 127, (menuShowRowNum) * 8 - 1, 0, CM_Fill); // Çå³ý²Ëµ¥ÄÚÈÝÇøÓò
+//    oled.DrawLine(0, (menuShowRowFrom + 1) * 8, 128, (menuShowRowFrom + 1) * 8 - 1, 1); // ï¿½ï¿½ï¿½Æ·Ö¸ï¿½ï¿½ï¿½
+//    oled.setDrawRect(0, (menuShowRowFrom + 1) * 8, 128, (menuShowRowFrom + 1 + menuShowRowNum) * 8 - 1); // ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    oled.FillRectangle(0, 0, 127, (menuShowRowNum) * 8 - 1, 0, CM_Fill); // ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-//    // ÏÔÊ¾²Ëµ¥Ïî
+//    // ï¿½ï¿½Ê¾ï¿½Ëµï¿½ï¿½ï¿½
 //    for (int i = 0; i < menuShowRowNum; i++)
 //    {
-//        if (itemIndex - (itemIndex % menuShowRowNum) + i >= itemCount) // Èç¹û³¬³ö²Ëµ¥ÏîÊýÁ¿£¬Ìø³öÑ­»·
+//        if (itemIndex - (itemIndex % menuShowRowNum) + i >= itemCount) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½
 //            break;
 
-//        if (i == itemIndex % menuShowRowNum)  // Èç¹ûµ±Ç°ÏîÊÇÑ¡ÖÐµÄ²Ëµ¥Ïî£¬¸ßÁÁÏÔÊ¾
+//        if (i == itemIndex % menuShowRowNum)  // ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ÐµÄ²Ëµï¿½ï¿½î£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 //            oled.ShowString(0, (i) * 8, (u8 *)itemList[itemIndex - (itemIndex % menuShowRowNum) + i]->descriptionStr, 8, 1, CM_Xor);
-//        else  // ·ñÔòÕý³£ÏÔÊ¾
+//        else  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 //            oled.ShowString(0, (i) * 8, (u8 *)itemList[itemIndex - (itemIndex % menuShowRowNum) + i]->descriptionStr, 7, 1, CM_Xor);
 //    }
 
-//    oled.FillRectangle(0, ((itemIndex % menuShowRowNum)) * 8, 127, ((itemIndex % menuShowRowNum) + 1) * 8 - 1, 1, CM_Xor); // ¸ßÁÁÏÔÊ¾µ±Ç°Ñ¡ÖÐµÄ²Ëµ¥Ïî±³¾°
-//    oled.setDrawRect(oldDrawRect); // »Ö¸´Ö®Ç°µÄ»æÖÆÇøÓò
+//    oled.FillRectangle(0, ((itemIndex % menuShowRowNum)) * 8, 127, ((itemIndex % menuShowRowNum) + 1) * 8 - 1, 1, CM_Xor); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ç°Ñ¡ï¿½ÐµÄ²Ëµï¿½ï¿½î±³ï¿½ï¿½
+//    oled.setDrawRect(oldDrawRect); // ï¿½Ö¸ï¿½Ö®Ç°ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 void Menu::btnUp_Press()
 {
-    itemIndex--;  // ÏòÉÏÑ¡Ôñ²Ëµ¥Ïî
+    itemIndex--;  // ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ëµï¿½ï¿½ï¿½
     if (itemIndex == 0xff)
         itemIndex = itemCount - 1;
 }
 
 void Menu::btnDown_Press()
 {
-    itemIndex++;  // ÏòÏÂÑ¡Ôñ²Ëµ¥Ïî
+    itemIndex++;  // ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ëµï¿½ï¿½ï¿½
     if (itemIndex >= itemCount)
         itemIndex = 0;
 }
 
 void Menu::btnOK_Press()
 {
-    if (itemList[itemIndex] && itemList[itemIndex]->callback)  // Èç¹û»Øµ÷º¯Êý´æÔÚ£¬µ÷ÓÃËü
+    if (itemList[itemIndex] && itemList[itemIndex]->callback)  // ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         itemList[itemIndex]->callback();
     }

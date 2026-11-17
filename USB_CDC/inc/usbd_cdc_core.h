@@ -39,11 +39,11 @@
 /** @defgroup usbd_cdc_Exported_Defines
   * @{
   */ 
-#define USB_CDC_CONFIG_DESC_SIZ                (67)
-#define USB_CDC_DESC_SIZ                       (67-9)
+/* Bulk config descriptor size: Config(9) + Interface(9) + EP_OUT(7) + EP_IN(7) = 32 */
+#define USB_BULK_CONFIG_DESC_SIZ               (32)
 
-#define DEVICE_CLASS_CDC                        0x02
-#define DEVICE_SUBCLASS_CDC                     0x00
+#define DEVICE_CLASS_VENDOR                     0xFF
+#define DEVICE_SUBCLASS_VENDOR                  0x00
 
 
 #define USB_DEVICE_DESCRIPTOR_TYPE              0x01
@@ -55,26 +55,10 @@
 #define STANDARD_ENDPOINT_DESC_SIZE             0x09
 
 #define CDC_DATA_IN_PACKET_SIZE                CDC_DATA_MAX_PACKET_SIZE
-        
 #define CDC_DATA_OUT_PACKET_SIZE               CDC_DATA_MAX_PACKET_SIZE
 
-/*---------------------------------------------------------------------*/
-/*  CDC definitions                                                    */
-/*---------------------------------------------------------------------*/
-
-/**************************************************/
-/* CDC Requests                                   */
-/**************************************************/
-#define SEND_ENCAPSULATED_COMMAND               0x00
-#define GET_ENCAPSULATED_RESPONSE               0x01
-#define SET_COMM_FEATURE                        0x02
-#define GET_COMM_FEATURE                        0x03
-#define CLEAR_COMM_FEATURE                      0x04
-#define SET_LINE_CODING                         0x20
-#define GET_LINE_CODING                         0x21
-#define SET_CONTROL_LINE_STATE                  0x22
-#define SEND_BREAK                              0x23
-#define NO_CMD                                  0xFF
+/* Transmit buffer size for direct bulk transfer */
+#define APP_TX_DATA_SIZE                        2048
 
 /**
   * @}
@@ -112,6 +96,10 @@ CDC_IF_Prop_TypeDef;
   */ 
 
 extern USBD_Class_cb_TypeDef  USBD_CDC_cb;
+
+/* Direct bulk transmit function */
+uint8_t USBD_Bulk_TransmitPacket(void *pdev, uint8_t *buf, uint32_t len);
+extern uint8_t USB_Tx_State;
 /**
   * @}
   */ 

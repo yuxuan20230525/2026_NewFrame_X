@@ -1,18 +1,18 @@
 #ifndef __VARIABLE_CHOOSE_H
 #define __VARIABLE_CHOOSE_H
 
-#include "widget.h"
+#include "Widget.h"
 
 class VariableChoose : public Menu {
 public:
     VariableChoose(Widget *parent, SimpleMPack &simpleMPack);
-    virtual void show() override;  // ÏÔÊ¾²Ëµ¥
-    virtual void btnOK_Press() override;  // °´ÏÂ OK ¼üÊ±ÏÔÊ¾Êý¾ÝÏêÇé
+    virtual void show() override;  // ï¿½ï¿½Ê¾ï¿½Ëµï¿½
+    virtual void btnOK_Press() override;  // ï¿½ï¿½ï¿½ï¿½ OK ï¿½ï¿½Ê±ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 protected:
-    SimpleMPack &simpleMPack;  // ÒýÓÃ SimpleMPack Êý¾Ý
+    SimpleMPack &simpleMPack;  // ï¿½ï¿½ï¿½ï¿½ SimpleMPack ï¿½ï¿½ï¿½ï¿½
   
-    void displayItemData(u8 index);  // ÏÔÊ¾Ñ¡ÖÐµÄ²Ëµ¥ÏîÊý¾Ý
+    void displayItemData(u8 index);  // ï¿½ï¿½Ê¾Ñ¡ï¿½ÐµÄ²Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 #endif // __VARIABLE_CHOOSE_H

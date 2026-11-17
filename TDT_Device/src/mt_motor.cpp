@@ -3,23 +3,23 @@ Author: skywalker&codeeartist
 TIME:2024_3_30
 
 *exp:
-*   Motor1 = new MT_Motor(MF9025, CAN2, 0x203);  //´´½¨motor
+*   Motor1 = new MT_Motor(MF9025, CAN2, 0x203);  //ï¿½ï¿½ï¿½ï¿½motor
 *****************************************************
-		Motor_Send(); ·¢ËÍº¯Êý
-		Motor_Receive(CanRxMsg *_CanRxMsg, u8 ifsetzero=0) ½ÓÊÕº¯Êý
-		ÆäÓà¶¼ºÍmotorÒ»Ñù
-*****************************************************Ê¹ÓÃµç»úÄÚÖÃ·´À¡Öµ
+		Motor_Send(); ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½
+		Motor_Receive(CanRxMsg *_CanRxMsg, u8 ifsetzero=0) ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½
+		ï¿½ï¿½ï¿½à¶¼ï¿½ï¿½motorÒ»ï¿½ï¿½
+*****************************************************Ê¹ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Öµ
 		Motor1->Auto_ctrlSpeed(50);
 		Motor1->Auto_ctrlPosition(30);
 		
-		ÒÔ¼°Ò»¶ÑÃüÁî
+		ï¿½Ô¼ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 */
 
-#include "MT_motor.h"
+#include "mt_motor.h"
 #include "dbus.h"
 
-#define MAX_NUM 10  //¶¨Òå×î´ó²»»áÓÐ10¸ölkmotorÍ¬Ê±±»ÉùÃ÷
-uint8_t vallid_mtNum=0;   //Ò»¹²¶¨ÒåµÄlkµç»ú¶ÔÏó
+#define MAX_NUM 10  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó²»»ï¿½ï¿½ï¿½10ï¿½ï¿½lkmotorÍ¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+uint8_t vallid_mtNum=0;   //Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½lkï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 MT_Motor* mtList[MAX_MTNUM]={0};
 
 enum _CMD
@@ -29,13 +29,13 @@ enum _CMD
   MOTOR_CLOSE = 0X80,
   MOTOR_STOP = 0X81,
   MOTOR_RUN = 0X88,
-  CTRL_IQ = 0XA1,    //¿ØÖÆÁ¦¾ØÄ£Ê½
-  CTRL_SPEED = 0XA2, //ËÙ¶ÈÄ£Ê½
-	MUL_POSITION=0XA4, //¶àÈ¦Î»ÖÃÄ£Ê½
-	MUL_POSI_READ=0X90 //¶Áµ¥È¦Î»ÖÃ
+  CTRL_IQ = 0XA1,    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+  CTRL_SPEED = 0XA2, //ï¿½Ù¶ï¿½Ä£Ê½
+	MUL_POSITION=0XA4, //ï¿½ï¿½È¦Î»ï¿½ï¿½Ä£Ê½
+	MUL_POSI_READ=0X90 //ï¿½ï¿½ï¿½ï¿½È¦Î»ï¿½ï¿½
 };
 
-// ×¢ÒâÊÇ½ÓÊÕµÄid ²»ÊÇ·¢ËÍid ´Ó0x240¿ªÊ¼£¬²¢ÇÒÂóËþµç»úÓÐÖØºÏµÄ¿ØÖÆÖ¡£¬ÒªÐ¡ÐÄ
+// ×¢ï¿½ï¿½ï¿½Ç½ï¿½ï¿½Õµï¿½id ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½id ï¿½ï¿½0x240ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ØºÏµÄ¿ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ÒªÐ¡ï¿½ï¿½
 MT_Motor::MT_Motor(MotorType motorType, CAN_TypeDef *_Canx, uint32_t _REC_ID):Virtual_Motor(motorType, _Canx,_REC_ID-0x100,_REC_ID)
 {
 	Send_Current_Agreement=&MT_Motor::SendCurrentAgreement;
@@ -51,26 +51,26 @@ void MT_Motor::Motor_Send()
 		 motorRead_totalAngle();
 		 readcnt=0;
 		 return;
-		} //5Ö¡¶ÁÒ»´Î¶àÈ¦½Ç¶È£¨Ò»°ãµç»ú¿ÉÒÔ²»ÓÃ£©
+		} //5Ö¡ï¿½ï¿½Ò»ï¿½Î¶ï¿½È¦ï¿½Ç¶È£ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½Ã£ï¿½
 		
 		if(use_my_send)
-			motorSend(canTxBuff);//×Ô¶¨Òå·¢ËÍº¯Êý
+			motorSend(canTxBuff);//ï¿½Ô¶ï¿½ï¿½å·¢ï¿½Íºï¿½ï¿½ï¿½
 		else
-			motorSend();//·¢ËÍº¯Êý
+			motorSend();//ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½
 }
 
 /**
- * @brief µç»úËÙ¶È¿ØÖÆ
- * @param ¿ØÖÆµÄËÙ¶È  dps
+ * @brief ï¿½ï¿½ï¿½ï¿½Ù¶È¿ï¿½ï¿½ï¿½
+ * @param ï¿½ï¿½ï¿½Æµï¿½ï¿½Ù¶ï¿½  dps
 */
 void MT_Motor::Auto_ctrlSpeed(float ctrlspeed)
 {
 	int32_t speed=ctrlspeed*100;
-    /* Çå³ý·¢ËÍÇø */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     memset(canTxBuff,0,8);
-    /* ÃüÁî¸ø¶¨ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     canTxBuff[0] = CTRL_SPEED;
-    /* Êý¾ÝÌî³ä */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	canTxBuff[4] = (uint8_t)((uint32_t)speed&0XFF);
 	canTxBuff[5] = (uint8_t)((uint32_t)speed>>8&0XFF);
 	canTxBuff[6] = (uint8_t)((uint32_t)speed>>16&0XFF);
@@ -79,18 +79,18 @@ void MT_Motor::Auto_ctrlSpeed(float ctrlspeed)
 }
 
 /**
- * @brief µç»ú¶àÈ¦½Ç¶È¿ØÖÆ
- * @param ¿ØÖÆµÄ½Ç¶È Îª 1degree/LSB
-maxspeedÎª×î´óËÙ¶È 1 dps/LSB ¿ÉÒÔ¾ö¶¨ËÙ¶ÈºÍÁ¦
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½È¦ï¿½Ç¶È¿ï¿½ï¿½ï¿½
+ * @param ï¿½ï¿½ï¿½ÆµÄ½Ç¶ï¿½ Îª 1degree/LSB
+maxspeedÎªï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ 1 dps/LSB ï¿½ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½Ù¶Èºï¿½ï¿½ï¿½
 */
-void MT_Motor::Auto_ctrlPosition(float ctrlposition,float maxspeed)  //Ê¹ÓÃÕâ¸öº¯ÊýÊ±ÐèÒª×¢Òâµç»úÊÇ·ñÓÐ¼õËÙ±È
+void MT_Motor::Auto_ctrlPosition(float ctrlposition,float maxspeed)  //Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Òª×¢ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ð¼ï¿½ï¿½Ù±ï¿½
 {
 	if(maxspeed<0)
 		maxspeed=10;
 	int32_t position=ctrlposition*100;
 
   canTxBuff[0] = MUL_POSITION;
-  /* Êý¾ÝÌî³ä */
+  /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	canTxBuff[2] = (uint8_t)((uint32_t)maxspeed&0XFF);
 	canTxBuff[3] = (uint8_t)((uint32_t)maxspeed>>8&0XFF);
 	
@@ -103,14 +103,14 @@ void MT_Motor::Auto_ctrlPosition(float ctrlposition,float maxspeed)  //Ê¹ÓÃÕâ¸öº
 
 
 /**
- * @brief ¶ÁÈ¡¶àÈ¦½Ç¶È
+ * @brief ï¿½ï¿½È¡ï¿½ï¿½È¦ï¿½Ç¶ï¿½
 */
 
 void MT_Motor::motorRead_totalAngle(void)
 {
     u8 canTxBuf[8];
 	  memset(canTxBuf,0,8);
-    /* ÃüÁî¸ø¶¨ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     canTxBuf[0] =MUL_POSI_READ;
 		canTx(canTxBuf,motorInfo.can_x == 0 ? CAN1 : CAN2,motorInfo.Send_ID);
 }
@@ -120,18 +120,18 @@ void MT_Motor::GetOriginData(CanInfo *Info,CanRxMsg *_CanRxMsg)
 {
 	
 	
-	 /* ¸ù¾ÝÃüÁîID½øÐÐÏàÓ¦´¦Àí */
+	 /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ */
     switch(_CanRxMsg->Data[0])
     {
         case CTRL_IQ: 
         case CTRL_SPEED:
 				case MUL_POSITION:
             Info->temperature = _CanRxMsg->Data[1];
-            Info->trueCurrent  = (int16_t)((uint16_t)(_CanRxMsg->Data[3]<<8)|_CanRxMsg->Data[2]);    //×ª¾ØµçÁ÷
+            Info->trueCurrent  = (int16_t)((uint16_t)(_CanRxMsg->Data[3]<<8)|_CanRxMsg->Data[2]);    //×ªï¿½Øµï¿½ï¿½ï¿½
             Info->speed = (int16_t)((uint16_t)(_CanRxMsg->Data[5]<<8)|_CanRxMsg->Data[4]);
             break;
 			case MUL_POSI_READ:
-					Info->encoder = (uint16_t)((uint16_t)(_CanRxMsg->Data[5]<<8)|_CanRxMsg->Data[4]); //±àÂëÆ÷Î»ÖÃ
+					Info->encoder = (uint16_t)((uint16_t)(_CanRxMsg->Data[5]<<8)|_CanRxMsg->Data[4]); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 				break;
         default:
             break;

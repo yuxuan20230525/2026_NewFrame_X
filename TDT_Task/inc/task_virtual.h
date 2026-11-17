@@ -43,10 +43,10 @@ public:
 class TaskControl
 {
 public:
-	// 任务列表
-	VirtualTask **taskList = 0;
+	// 任务列表 (BSS零初始化，不用NSDMI，避免构造函数覆盖VirtualTask注册)
+	VirtualTask **taskList;
 	// 任务数量
-	int taskNum = 0;
+	int taskNum;
 
 	// 全部任务初始化流程
 	void AllTask_Init(void);

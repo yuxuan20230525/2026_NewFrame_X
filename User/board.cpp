@@ -23,8 +23,14 @@ function:
 #include "oled.h"
 #include "vofa.h"
 #include "power_task.h"
+#include "pwm.h"
 #include "remotevt03.h"
 #include "camera_Timematch.h"
+#include "log.h"
+#include "customclient.h"
+//#include "gimbal.h"
+//#include "Gun.h"
+#include "Drone.h"
 
 /*初始化完成标志*/
 u8 Init_OK = 0;
@@ -52,11 +58,11 @@ void boardALLInit(void)
 	/*视觉串口初始化*/
 
 #if USE_VISION
-	Vision.init();
+	vision.init();
 #endif
 	
 #if USE_USB_VISION | USE_LOG
-	Vision.USB_init();
+	vision.USB_init();
 #endif
 
 #if USE_LOG
@@ -65,6 +71,7 @@ void boardALLInit(void)
 
 #if USE_RCVT03
 	RCVT03.init();
+	customClientInit();//USART6 TX DMA(DMA2_Stream6),0x0310 发往自定义客户端
 #endif
 
 #if USE_JUDGEMENT
@@ -80,11 +87,18 @@ void boardALLInit(void)
 #if USE_BUZZER
 	buzzer.init();
 #endif
+
+#if USE_POWER
 	power_Task.init();
+#endif
 	
 #if USE_CAMERATM
     cameraTM.init();
 #endif
+
+//	gimbal.Init();
+//	gun.Init();
+	drone.Init();
 
 //	/*看门狗初始化-喂狗在LED*/
 	iwdgInit(4, 50);
@@ -93,6 +107,16 @@ void boardALLInit(void)
 	/*初始化完成*/
 	Init_OK = 1;
 }
+
+/**
+ * @brief 软件复位：单片机重启
+ */
+void softwareReset(void)
+{
+    __set_FAULTMASK(1); // 关闭所有中断
+    NVIC_SystemReset(); // 系统复位
+}
+
 /***********End of file*****************  */
 
 /**

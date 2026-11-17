@@ -103,8 +103,9 @@ typedef struct _PidParam
 	///@warning 部分参数及算法未测试
 	struct
 	{
+		float ffValue = 0;	/* 前馈 *//* ff add */
 		float VIntegralIndex = 0; ///< 变积分系数
-		float DLPFIndex = 0;	  ///< 微分项低通滤波系数
+		float DLPFIndex = 0;	  ///< 微分项低通滤波系数	/* 理论上 DLPFIndex = 1 / (1+2*pi*fc*Ts) */
 		float S_Buff = 0;		  ///< 变积分增益
 		float MAXlimit = 0;		  ///< 变积分上极限
 		float MINlimit = 0;		  ///< 变积分下极限
@@ -143,6 +144,8 @@ public:
 	bool LoadCheck(int planIndex = 0);
 	// 清空相关变量
 	void Clear();
+	/* 设定前馈值 */
+	void setFfValue(uint8_t planIndex, float positiveValue);
 	// PID算法实现
 	float Calculate(double _setValue, double _fbValue, int planIndex = 0, float *_result = 0, float _T = 0);
 	float Calculate(double _setValue, int planIndex = 0, float *result = 0, float T_ = 0);

@@ -1,120 +1,128 @@
 /**
  * @file Fusion_AHRS.cpp
  * @author liuskywalkerjskd
- * @brief »ùÓÚ¼ÓËÙ¶È¼ÆºÍÍÓÂÝÒÇµÄAHRSËã·¨ÊµÏÖ
- * @note ÒÆ³ýÁËÔ­°æÖÐËùÓÐ´ÅÁ¦¼ÆÏà¹Ø´úÂë£¬½ö±£Áô¼ÓËÙ¶È¼ÆºÍÍÓÂÝÒÇ²¿·Ö
+ * @brief ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ù¶È¼Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½AHRSï¿½ã·¨Êµï¿½ï¿½
+ * @note ï¿½Æ³ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½
  */
 
 #include <float.h>
 #include <math.h>
 #include "Fusion_AHRS.h"
 
-MadgwickParam madgwickParam ; //ÌÝ¶ÈÏÂ½µ·¨²ÎÊý½á¹¹Ìå
+MadgwickParam madgwickParam ; //ï¿½Ý¶ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
 
 //------------------------------------------------------------------------------
-// ¶¨Òå³£Á¿
+// ï¿½ï¿½ï¿½å³£ï¿½ï¿½
 
 /**
- * @brief ³õÊ¼»¯½×¶ÎÊ¹ÓÃµÄÔöÒæÖµ
+ * @brief ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½×¶ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Öµ
  */
 #define INITIAL_GAIN (10.0f)
 
 
 /**
- * @brief ³õÊ¼»¯Ê±¼ä
+ * @brief ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½
  */
 #define INITIALISATION_PERIOD (2.0f)
 
 
 /**
- * @brief ÍÓÂÝÒÇÁãÆ«Ð£Õý½ØÖ¹ÆµÂÊ(Hz)
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«Ð£ï¿½ï¿½ï¿½ï¿½Ö¹Æµï¿½ï¿½(Hz)
  */
 #define CUTOFF_FREQUENCY (0.02f)
 
 /**
- * @brief ÁãÆ«Ð£Õý³¬Ê±Ê±¼ä(Ãë)
+ * @brief ï¿½ï¿½Æ«Ð£ï¿½ï¿½ï¿½ï¿½Ê±Ê±ï¿½ï¿½(ï¿½ï¿½)
  */
 #define TIMEOUT (5)
 
 /**
- * @brief ÁãÆ«Ð£ÕýãÐÖµ(¡ã/s)
+ * @brief ï¿½ï¿½Æ«Ð£ï¿½ï¿½ï¿½ï¿½Öµ(ï¿½ï¿½/s)
  */
 #define THRESHOLD (3.0f)
 
 /**
- * @brief ÊÇ·ñÊ¹ÓÃÌÝ¶È·¨²¹³¥
+ * @brief ï¿½Ç·ï¿½Ê¹ï¿½ï¿½ï¿½Ý¶È·ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 #define GRAD_DEC 0
 
 //------------------------------------------------------------------------------
-// ¾²Ì¬º¯ÊýÉùÃ÷
+// ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 /**
- * @brief ¼ÆËãÖØÁ¦·½ÏòµÄÒ»°ëÖµ
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Öµ
  */
 static inline FusionVector HalfGravity(const FusionAhrs *const ahrs);
 
 /**
- * @brief ¼ÆËã¼ÓËÙ¶È¼Æ·´À¡
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼Æ·ï¿½ï¿½ï¿½
  */
 static inline FusionVector Feedback(const FusionVector sensor, const FusionVector reference);
 
 /**
- * @brief ÊýÖµÇ¯ÖÆº¯Êý
+ * @brief ï¿½ï¿½ÖµÇ¯ï¿½Æºï¿½ï¿½ï¿½
  */
 static inline int Clamp(const int value, const int min, const int max);
 
 //------------------------------------------------------------------------------
-// AHRSËã·¨º¯ÊýÊµÏÖ
+// AHRSï¿½ã·¨ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
 int use_grad = 0 ;
 /**
- * @brief ³õÊ¼»¯AHRSËã·¨½á¹¹Ìå
- * @param ahrs AHRSËã·¨½á¹¹ÌåÖ¸Õë
+ * @brief ï¿½ï¿½Ê¼ï¿½ï¿½AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½
+ * @param ahrs AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
  */
 void FusionAhrsInitialise(FusionAhrs *const ahrs) {
     const FusionAhrsSettings settings = {
-            .convention = FusionConventionNwu,  // Ä¬ÈÏÊ¹ÓÃNWU×ø±êÏµ
-            .gain = 0.5f,                      // Ä¬ÈÏÔöÒæ
-            .gyroscopeRange = 4000.0f,         // Ä¬ÈÏÍÓÂÝÒÇÁ¿³Ì2000¡ã/s
-            .accelerationRejection = 32.0f,    // Ä¬ÈÏ¼ÓËÙ¶È¾Ü¾øãÐÖµ30¡ã
-            .recoveryTriggerPeriod = 100,        // Ä¬ÈÏ»Ö¸´´¥·¢ÖÜÆÚ
+            .convention = FusionConventionNwu,  // Ä¬ï¿½ï¿½Ê¹ï¿½ï¿½NWUï¿½ï¿½ï¿½ï¿½Ïµ
+            .gain = 0.5f,                      // Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            .gyroscopeRange = 4000.0f,         // Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2000ï¿½ï¿½/s
+            .accelerationRejection = 32.0f,    // Ä¬ï¿½Ï¼ï¿½ï¿½Ù¶È¾Ü¾ï¿½ï¿½ï¿½Öµ30ï¿½ï¿½
+            .recoveryTriggerPeriod = 100,        // Ä¬ï¿½Ï»Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            .restGain = 3.0f,                    // rest detection boost gain
+            .restGyroscopeThreshold = 5.0f,      // rest: gyro < 5 deg/s
+            .restAccelerationMin = 0.9f,         // rest: acc > 0.9g
+            .restAccelerationMax = 1.1f,         // rest: acc < 1.1g
+            .restDebouncePeriod = 50,            // rest: 50 samples debounce
+            .dynamicFeedbackScale = 50.0f,       // dynamic feedback scale factor
     };
     FusionAhrsSetSettings(ahrs, &settings);
     FusionAhrsReset(ahrs);
 }
 
 /**
- * @brief ÖØÖÃAHRSËã·¨×´Ì¬
- * @param ahrs AHRSËã·¨½á¹¹ÌåÖ¸Õë
+ * @brief ï¿½ï¿½ï¿½ï¿½AHRSï¿½ã·¨×´Ì¬
+ * @param ahrs AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
  */
 void FusionAhrsReset(FusionAhrs *const ahrs) {
-    ahrs->quaternion = FUSION_IDENTITY_QUATERNION;  // ÖØÖÃÎªµ¥Î»ËÄÔªÊý
-    ahrs->accelerometer = FUSION_VECTOR_ZERO;       // ÖØÖÃ¼ÓËÙ¶È¼ÆÊý¾Ý
+    ahrs->quaternion = FUSION_IDENTITY_QUATERNION;  // ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½Ôªï¿½ï¿½
+    ahrs->accelerometer = FUSION_VECTOR_ZERO;       // ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½
 		ahrs->initialising = true;
     ahrs->rampedGain = INITIAL_GAIN;
-    ahrs->angularRateRecovery = false;              // ÖØÖÃ½ÇËÙÂÊ»Ö¸´±êÖ¾
-    ahrs->halfAccelerometerFeedback = FUSION_VECTOR_ZERO; // ÖØÖÃ¼ÓËÙ¶È·´À¡
-    ahrs->accelerometerIgnored = false;             // ÖØÖÃ¼ÓËÙ¶ÈºöÂÔ±êÖ¾
-    ahrs->accelerationRecoveryTrigger = 0;          // ÖØÖÃ¼ÓËÙ¶È»Ö¸´´¥·¢Æ÷
-    ahrs->accelerationRecoveryTimeout = ahrs->settings.recoveryTriggerPeriod; // ÖØÖÃ³¬Ê±
+    ahrs->angularRateRecovery = false;              // ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½Ê»Ö¸ï¿½ï¿½ï¿½Ö¾
+    ahrs->halfAccelerometerFeedback = FUSION_VECTOR_ZERO; // ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶È·ï¿½ï¿½ï¿½
+    ahrs->accelerometerIgnored = false;             // ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶Èºï¿½ï¿½Ô±ï¿½Ö¾
+    ahrs->accelerationRecoveryTrigger = 0;          // ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶È»Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ahrs->accelerationRecoveryTimeout = ahrs->settings.recoveryTriggerPeriod; // ï¿½ï¿½ï¿½Ã³ï¿½Ê±
+    ahrs->restCounter = 0;
+    ahrs->atRest = false;
 }
 
 /**
- * @brief ÉèÖÃAHRSËã·¨²ÎÊý
- * @param ahrs AHRSËã·¨½á¹¹ÌåÖ¸Õë
- * @param settings ²ÎÊýÉèÖÃ½á¹¹ÌåÖ¸Õë
+ * @brief ï¿½ï¿½ï¿½ï¿½AHRSï¿½ã·¨ï¿½ï¿½ï¿½ï¿½
+ * @param ahrs AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+ * @param settings ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
  */
 void FusionAhrsSetSettings(FusionAhrs *const ahrs, const FusionAhrsSettings *const settings) {
     ahrs->settings.convention = settings->convention;
     ahrs->settings.gain = settings->gain;
-    // ¼ÆËãÍÓÂÝÒÇÓÐÐ§Á¿³Ì(Áô2%ÓàÁ¿)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½2%ï¿½ï¿½ï¿½ï¿½)
     ahrs->settings.gyroscopeRange = settings->gyroscopeRange == 0.0f ? FLT_MAX : 0.98f * settings->gyroscopeRange;
-    // ¼ÆËã¼ÓËÙ¶È¾Ü¾øãÐÖµ(×ª»»Îª»¡¶È²¢¼ÆËã°ë½ÇÕýÏÒµÄÆ½·½)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¾Ü¾ï¿½ï¿½ï¿½Öµ(×ªï¿½ï¿½Îªï¿½ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Æ½ï¿½ï¿½)
     ahrs->settings.accelerationRejection = settings->accelerationRejection == 0.0f ? FLT_MAX : powf(0.5f * sinf(FusionDegreesToRadians(settings->accelerationRejection)), 2);
     ahrs->settings.recoveryTriggerPeriod = settings->recoveryTriggerPeriod;
     ahrs->accelerationRecoveryTimeout = ahrs->settings.recoveryTriggerPeriod;
     
-    // Èç¹ûÔöÒæÎª0»ò»Ö¸´ÖÜÆÚÎª0£¬Ôò½ûÓÃ¼ÓËÙ¶È¾Ü¾ø
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶È¾Ü¾ï¿½
     if ((settings->gain == 0.0f) || (settings->recoveryTriggerPeriod == 0)) {
         ahrs->settings.accelerationRejection = FLT_MAX;
     }
@@ -122,42 +130,52 @@ void FusionAhrsSetSettings(FusionAhrs *const ahrs, const FusionAhrsSettings *con
         ahrs->rampedGain = ahrs->settings.gain;
     }
     ahrs->rampedGainStep = (INITIAL_GAIN - ahrs->settings.gain) / (INITIALISATION_PERIOD);
+    ahrs->settings.restGain = settings->restGain > 0.0f ? settings->restGain : 3.0f;
+    // Rest detection thresholds (store as squared for comparison)
+    const float gyroThr = settings->restGyroscopeThreshold >= 0.0f ? settings->restGyroscopeThreshold : 5.0f;
+    ahrs->settings.restGyroscopeThreshold = gyroThr * gyroThr;
+    const float accMin = settings->restAccelerationMin >= 0.0f ? settings->restAccelerationMin : 0.9f;
+    ahrs->settings.restAccelerationMin = accMin * accMin;
+    const float accMax = settings->restAccelerationMax > 0.0f ? settings->restAccelerationMax : 1.1f;
+    ahrs->settings.restAccelerationMax = accMax * accMax;
+    ahrs->settings.restDebouncePeriod = settings->restDebouncePeriod > 0 ? settings->restDebouncePeriod : 50;
+    ahrs->settings.dynamicFeedbackScale = settings->dynamicFeedbackScale >= 0.0f ? settings->dynamicFeedbackScale : 50.0f;
 }
 
 /**
- * @brief ¸üÐÂAHRSËã·¨×´Ì¬(²»Ê¹ÓÃ´ÅÁ¦¼Æ)
- * @param ahrs AHRSËã·¨½á¹¹ÌåÖ¸Õë
- * @param gyroscope ÍÓÂÝÒÇÊý¾Ý(¡ã/s)
- * @param accelerometer ¼ÓËÙ¶È¼ÆÊý¾Ý(g)
- * @param deltaTime Ê±¼ä²½³¤(Ãë)
+ * @brief ï¿½ï¿½ï¿½ï¿½AHRSï¿½ã·¨×´Ì¬(ï¿½ï¿½Ê¹ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½)
+ * @param ahrs AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+ * @param gyroscope ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½/s)
+ * @param accelerometer ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½(g)
+ * @param deltaTime Ê±ï¿½ä²½ï¿½ï¿½(ï¿½ï¿½)
  */
 void FusionAhrsUpdateNoMagnetometer(FusionAhrs *const ahrs, const FusionVector gyroscope, const FusionVector accelerometer, const float deltaTime) {
-    // µ÷ÓÃÖ÷¸üÐÂº¯Êý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âºï¿½ï¿½ï¿½
     FusionAhrsUpdate(ahrs, gyroscope, accelerometer, deltaTime);
 }
 
 /**
- * @brief ¸üÐÂAHRSËã·¨×´Ì¬
- * @param ahrs AHRSËã·¨½á¹¹ÌåÖ¸Õë
- * @param gyroscope ÍÓÂÝÒÇÊý¾Ý(¡ã/s)
- * @param accelerometer ¼ÓËÙ¶È¼ÆÊý¾Ý(g)
- * @param deltaTime Ê±¼ä²½³¤(Ãë)
+ * @brief ï¿½ï¿½ï¿½ï¿½AHRSï¿½ã·¨×´Ì¬
+ * @param ahrs AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+ * @param gyroscope ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½/s)
+ * @param accelerometer ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½(g)
+ * @param deltaTime Ê±ï¿½ä²½ï¿½ï¿½(ï¿½ï¿½)
  */
 
 void FusionAhrsUpdate(FusionAhrs *const ahrs, const FusionVector gyroscope, const FusionVector accelerometer, const float deltaTime) {
 #define Q ahrs->quaternion.element
 
-    // ´æ´¢¼ÓËÙ¶È¼ÆÊý¾Ý
+    // ï¿½æ´¢ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½
     ahrs->accelerometer = accelerometer;
 
-    // Èç¹ûÍÓÂÝÒÇÊý¾Ý³¬³öÁ¿³Ì£¬ÔòÖØÐÂ³õÊ¼»¯
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½Ê¼ï¿½ï¿½
     if ((fabsf(gyroscope.axis.x) > ahrs->settings.gyroscopeRange) || 
         (fabsf(gyroscope.axis.y) > ahrs->settings.gyroscopeRange) || 
         (fabsf(gyroscope.axis.z) > ahrs->settings.gyroscopeRange)) {
         const FusionQuaternion quaternion = ahrs->quaternion;
         FusionAhrsReset(ahrs);
-        ahrs->quaternion = quaternion;  // ±£³Öµ±Ç°×ËÌ¬
-        ahrs->angularRateRecovery = true; // ÉèÖÃ½ÇËÙÂÊ»Ö¸´±êÖ¾
+        ahrs->quaternion = quaternion;  // ï¿½ï¿½ï¿½Öµï¿½Ç°ï¿½ï¿½Ì¬
+        ahrs->angularRateRecovery = true; // ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½Ê»Ö¸ï¿½ï¿½ï¿½Ö¾
     }
 		 // Ramp down gain during initialisation
     if (ahrs->initialising) {
@@ -169,55 +187,83 @@ void FusionAhrsUpdate(FusionAhrs *const ahrs, const FusionVector gyroscope, cons
 					ahrs->angularRateRecovery = false;
 			}
     }
-		
-		
-    // ¼ÆËãËã·¨Ö¸Ê¾µÄÖØÁ¦·½Ïò(°ëÖµ)
+
+    // Rest detection: boost gain when stationary for faster convergence
+    if (!ahrs->initialising) {
+        const float gyroMagSq = FusionVectorMagnitudeSquared(gyroscope);
+        const float accMagSq = FusionVectorMagnitudeSquared(accelerometer);
+        // gyro < threshold AND acc within [min, max]
+        if (gyroMagSq < ahrs->settings.restGyroscopeThreshold && accMagSq > ahrs->settings.restAccelerationMin && accMagSq < ahrs->settings.restAccelerationMax) {
+            if (ahrs->restCounter < (int)ahrs->settings.restDebouncePeriod) {
+                ahrs->restCounter++;
+            } else {
+                ahrs->atRest = true;
+                ahrs->rampedGain = ahrs->settings.restGain;
+            }
+        } else {
+            ahrs->restCounter = 0;
+            if (ahrs->atRest) {
+                ahrs->atRest = false;
+                ahrs->rampedGain = ahrs->settings.gain;
+            }
+        }
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ã·¨Ö¸Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Öµ)
     const FusionVector halfGravity = HalfGravity(ahrs);
 
-    // ¼ÆËã¼ÓËÙ¶È¼Æ·´À¡
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼Æ·ï¿½ï¿½ï¿½
     FusionVector halfAccelerometerFeedback = FUSION_VECTOR_ZERO;
     ahrs->accelerometerIgnored = true;
     if (FusionVectorIsZero(accelerometer) == false) {
-        // ¼ÆËã¹éÒ»»¯¼ÓËÙ¶È¼ÆÊý¾ÝÓëÖØÁ¦·½ÏòµÄ·´À¡
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
         ahrs->halfAccelerometerFeedback = Feedback(FusionVectorNormalise(accelerometer), halfGravity);
         
-        // ¼ì²éÊÇ·ñÐèÒªºöÂÔ¼ÓËÙ¶È¼ÆÊý¾Ý
-        if (((FusionVectorMagnitudeSquared(ahrs->halfAccelerometerFeedback) <= ahrs->settings.accelerationRejection))) {
+        // ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½
+        // åˆå§‹åŒ–é˜¶æ®µè·³è¿‡åŠ é€Ÿåº¦æ‹’ç»ï¼Œæ— æ¡ä»¶é‡‡ä¿¡
+        if (ahrs->initialising) {
             ahrs->accelerometerIgnored = false;
-            ahrs->accelerationRecoveryTrigger -= 9; // ¼ÓËÙ»Ö¸´
+        }
+        else if (((FusionVectorMagnitudeSquared(ahrs->halfAccelerometerFeedback) <= ahrs->settings.accelerationRejection))) {
+            ahrs->accelerometerIgnored = false;
+            ahrs->accelerationRecoveryTrigger -= 3;
         } else {
-            ahrs->accelerationRecoveryTrigger += 1; // Ôö¼Ó´¥·¢¼ÆÊý
+            ahrs->accelerationRecoveryTrigger += 1;
         }
         
-        // ¼ì²éÊÇ·ñ´¥·¢»Ö¸´
+        // ï¿½ï¿½ï¿½ï¿½Ç·ñ´¥·ï¿½ï¿½Ö¸ï¿½
         if (ahrs->accelerationRecoveryTrigger > ahrs->accelerationRecoveryTimeout) {
             ahrs->accelerationRecoveryTimeout = 0;
-            ahrs->accelerometerIgnored = false; // Ç¿ÖÆÊ¹ÓÃ¼ÓËÙ¶È¼Æ
+            ahrs->accelerometerIgnored = false; // Ç¿ï¿½ï¿½Ê¹ï¿½Ã¼ï¿½ï¿½Ù¶È¼ï¿½
         } else {
             ahrs->accelerationRecoveryTimeout = ahrs->settings.recoveryTriggerPeriod;
         }
         
-        // Ç¯ÖÆ´¥·¢¼ÆÊý
+        // Ç¯ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         ahrs->accelerationRecoveryTrigger = Clamp(ahrs->accelerationRecoveryTrigger, 0, ahrs->settings.recoveryTriggerPeriod);
         
-        // Èç¹û²»ºöÂÔ¼ÓËÙ¶È¼Æ£¬ÔòÊ¹ÓÃ·´À¡
+        // Apply feedback with dynamic scaling based on acceleration magnitude
         if (ahrs->accelerometerIgnored == false) {
-            halfAccelerometerFeedback = ahrs->halfAccelerometerFeedback;
+            // |a| near 1g â†’ scaleâ‰ˆ1; |a| far from 1g â†’ scaleâ†’0
+            const float accMag = FusionVectorMagnitude(accelerometer);
+            const float accError = fabsf(accMag - 1.0f);
+            const float feedbackScale = 1.0f / (1.0f + ahrs->settings.dynamicFeedbackScale * accError * accError);
+            halfAccelerometerFeedback = FusionVectorMultiplyScalar(ahrs->halfAccelerometerFeedback, feedbackScale);
         }
     }
 
-    // ½«ÍÓÂÝÒÇÊý¾Ý×ª»»Îª»¡¶È/Ãë²¢Ëõ·Å0.5±¶
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½/ï¿½ë²¢ï¿½ï¿½ï¿½ï¿½0.5ï¿½ï¿½
     const FusionVector halfGyroscope = FusionVectorMultiplyScalar(gyroscope, FusionDegreesToRadians(0.5f));
 
-    // ½«·´À¡Ó¦ÓÃµ½ÍÓÂÝÒÇÊý¾Ý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     const FusionVector adjustedHalfGyroscope = FusionVectorAdd(halfGyroscope, FusionVectorMultiplyScalar(halfAccelerometerFeedback, ahrs->rampedGain));
 
-    // »ý·ÖËÄÔªÊý±ä»¯ÂÊ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½ä»¯ï¿½ï¿½
     ahrs->quaternion = FusionQuaternionAdd(ahrs->quaternion, 
         FusionQuaternionMultiplyVector(ahrs->quaternion, 
             FusionVectorMultiplyScalar(adjustedHalfGyroscope, deltaTime)));
 
-    // ¹éÒ»»¯ËÄÔªÊý
+    // ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½
     ahrs->quaternion = FusionQuaternionNormalise(ahrs->quaternion);
 	
 	if(use_grad)
@@ -236,7 +282,7 @@ void FusionAhrsUpdate(FusionAhrs *const ahrs, const FusionVector gyroscope, cons
 		float similarity_error = 1.0f - fabsf(dot_product);
 
 		// ??????? Fusion_Power
-		// ?????????????? maxFusionPower???????§³???????? minFusionPower,???????
+		// ?????????????? maxFusionPower???????ï¿½ï¿½???????? minFusionPower,???????
 		float dynamicFusionPower = madgwickParam.minFusionPower + similarity_error * (madgwickParam.maxFusionPower - madgwickParam.minFusionPower);
 		// ?????????????????
 		if (dynamicFusionPower > madgwickParam.maxFusionPower) 
@@ -244,7 +290,7 @@ void FusionAhrsUpdate(FusionAhrs *const ahrs, const FusionVector gyroscope, cons
 			dynamicFusionPower = madgwickParam.maxFusionPower;
 		}
 			
-		// ?? Madgwick ????????§Ö?????
+		// ?? Madgwick ????????ï¿½ï¿½?????
 		// ???: filtered_value = alpha * new_value + (1 - alpha) * last_filtered_value
 		madgwickParam.fq0 = madgwickParam.filterAlpha * madgwickParam.q0 + (1.0f - madgwickParam.filterAlpha) * madgwickParam.fq0;
 		madgwickParam.fq1 = madgwickParam.filterAlpha * madgwickParam.q1 + (1.0f - madgwickParam.filterAlpha) * madgwickParam.fq1;
@@ -273,7 +319,7 @@ void FusionAhrsUpdate(FusionAhrs *const ahrs, const FusionVector gyroscope, cons
 }
 
 /**
- * @brief ¼ÆËãÖØÁ¦·½ÏòµÄÒ»°ëÖµ
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Öµ
  */
 static inline FusionVector HalfGravity(const FusionAhrs *const ahrs) {
 #define Q ahrs->quaternion.element
@@ -301,10 +347,10 @@ static inline FusionVector HalfGravity(const FusionAhrs *const ahrs) {
 }
 
 /**
- * @brief ¼ÆËã´«¸ÐÆ÷·´À¡
+ * @brief ï¿½ï¿½ï¿½ã´«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionVector Feedback(const FusionVector sensor, const FusionVector reference) {
-    // Èç¹û´«¸ÐÆ÷Óë²Î¿¼·½ÏòÏà·´£¬ÔòÏÈ¹éÒ»»¯²æ»ý½á¹û
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à·´ï¿½ï¿½ï¿½ï¿½ï¿½È¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (FusionVectorDotProduct(sensor, reference) < 0.0f) {
         return FusionVectorNormalise(FusionVectorCrossProduct(sensor, reference));
     }
@@ -312,7 +358,7 @@ static inline FusionVector Feedback(const FusionVector sensor, const FusionVecto
 }
 
 /**
- * @brief ÊýÖµÇ¯ÖÆº¯Êý
+ * @brief ï¿½ï¿½ÖµÇ¯ï¿½Æºï¿½ï¿½ï¿½
  */
 static inline int Clamp(const int value, const int min, const int max) {
     if (value < min) return min;
@@ -321,21 +367,21 @@ static inline int Clamp(const int value, const int min, const int max) {
 }
 
 /**
- * @brief »ñÈ¡µ±Ç°×ËÌ¬ËÄÔªÊý
+ * @brief ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Ì¬ï¿½ï¿½Ôªï¿½ï¿½
  */
 FusionQuaternion FusionAhrsGetQuaternion(const FusionAhrs *const ahrs) {
     return ahrs->quaternion;
 }
 
 /**
- * @brief ÉèÖÃµ±Ç°×ËÌ¬ËÄÔªÊý
+ * @brief ï¿½ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½Ì¬ï¿½ï¿½Ôªï¿½ï¿½
  */
 void FusionAhrsSetQuaternion(FusionAhrs *const ahrs, const FusionQuaternion quaternion) {
     ahrs->quaternion = quaternion;
 }
 
 /**
- * @brief »ñÈ¡ÖØÁ¦ÏòÁ¿
+ * @brief ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 FusionVector FusionAhrsGetGravity(const FusionAhrs *const ahrs) {
 #define Q ahrs->quaternion.element
@@ -349,7 +395,7 @@ FusionVector FusionAhrsGetGravity(const FusionAhrs *const ahrs) {
 }
 
 /**
- * @brief »ñÈ¡ÏßÐÔ¼ÓËÙ¶È(È¥³ýÖØÁ¦Ó°Ïì)
+ * @brief ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ù¶ï¿½(È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½)
  */
 FusionVector FusionAhrsGetLinearAcceleration(const FusionAhrs *const ahrs) {
     switch (ahrs->settings.convention) {
@@ -365,7 +411,7 @@ FusionVector FusionAhrsGetLinearAcceleration(const FusionAhrs *const ahrs) {
 }
 
 /**
- * @brief »ñÈ¡µØÇò×ø±êÏµÏÂµÄ¼ÓËÙ¶È
+ * @brief ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ÂµÄ¼ï¿½ï¿½Ù¶ï¿½
  */
 FusionVector FusionAhrsGetEarthAcceleration(const FusionAhrs *const ahrs) {
 #define Q ahrs->quaternion.element
@@ -385,10 +431,10 @@ FusionVector FusionAhrsGetEarthAcceleration(const FusionAhrs *const ahrs) {
     switch (ahrs->settings.convention) {
         case FusionConventionNwu:
         case FusionConventionEnu:
-            accelerometer.axis.z -= 1.0f;  // ¼õÈ¥ÖØÁ¦Ó°Ïì
+            accelerometer.axis.z -= 1.0f;  // ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
             break;
         case FusionConventionNed:
-            accelerometer.axis.z += 1.0f;  // ¼ÓÉÏÖØÁ¦Ó°Ïì
+            accelerometer.axis.z += 1.0f;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
             break;
     }
     return accelerometer;
@@ -397,7 +443,7 @@ FusionVector FusionAhrsGetEarthAcceleration(const FusionAhrs *const ahrs) {
 }
 
 /**
- * @brief »ñÈ¡AHRSÄÚ²¿×´Ì¬
+ * @brief ï¿½ï¿½È¡AHRSï¿½Ú²ï¿½×´Ì¬
  */
 FusionAhrsInternalStates FusionAhrsGetInternalStates(const FusionAhrs *const ahrs) {
     const FusionAhrsInternalStates internalStates = {
@@ -410,64 +456,65 @@ FusionAhrsInternalStates FusionAhrsGetInternalStates(const FusionAhrs *const ahr
 }
 
 /**
- * @brief »ñÈ¡AHRS×´Ì¬±êÖ¾
+ * @brief ï¿½ï¿½È¡AHRS×´Ì¬ï¿½ï¿½Ö¾
  */
 FusionAhrsFlags FusionAhrsGetFlags(const FusionAhrs *const ahrs) {
     const FusionAhrsFlags flags = {
             .angularRateRecovery = ahrs->angularRateRecovery,
             .accelerationRecovery = ahrs->accelerationRecoveryTrigger > ahrs->accelerationRecoveryTimeout,
+            .atRest = ahrs->atRest,
     };
     return flags;
 }
 
 /**
- * @brief ÉèÖÃº½Ïò½Ç
+ * @brief ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½
  */
 void FusionAhrsSetHeading(FusionAhrs *const ahrs, const float heading) {
 #define Q ahrs->quaternion.element
-    // ¼ÆËãµ±Ç°Æ«º½½Ç
+    // ï¿½ï¿½ï¿½ãµ±Ç°Æ«ï¿½ï¿½ï¿½ï¿½
     const float yaw = atan2f(Q.w * Q.z + Q.x * Q.y, 0.5f - Q.y * Q.y - Q.z * Q.z);
-    // ¼ÆËãµ±Ç°º½ÏòÓëÄ¿±êº½Ïò²îÖµµÄÒ»°ë
+    // ï¿½ï¿½ï¿½ãµ±Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½êº½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ò»ï¿½ï¿½
     const float halfYawMinusHeading = 0.5f * (yaw - FusionDegreesToRadians(heading));
-    // ´´½¨ÈÆZÖáÐý×ªµÄËÄÔªÊý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½
     const FusionQuaternion rotation = {.element = {
             .w = cosf(halfYawMinusHeading),
             .x = 0.0f,
             .y = 0.0f,
             .z = -1.0f * sinf(halfYawMinusHeading),
     }};
-    // Ó¦ÓÃÐý×ª
+    // Ó¦ï¿½ï¿½ï¿½ï¿½×ª
     ahrs->quaternion = FusionQuaternionMultiply(rotation, ahrs->quaternion);
 #undef Q
 }
 
 //------------------------------------------------------------------------------
-// ÍÓÂÝÒÇÁãÆ«Ð£Õýº¯Êý
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 /**
- * @brief ³õÊ¼»¯ÍÓÂÝÒÇÁãÆ«Ð£Õý
- * @param offset Ð£Õý½á¹¹ÌåÖ¸Õë
- * @param sampleRate ²ÉÑùÂÊ(Hz)
+ * @brief ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«Ð£ï¿½ï¿½
+ * @param offset Ð£ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+ * @param sampleRate ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Hz)
  */
 void FusionOffsetInitialise(FusionOffset *const offset, const unsigned int sampleRate) {
-    // ¼ÆËãÂË²¨Æ÷ÏµÊý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½Ïµï¿½ï¿½
     offset->filterCoefficient = 2.0f * (float) M_PI * CUTOFF_FREQUENCY * (1.0f / (float) sampleRate);
-    offset->timeout = TIMEOUT * sampleRate;  // ¼ÆËã³¬Ê±¼ÆÊý
-    offset->timer = 0;                       // ÖØÖÃ¼ÆÊ±Æ÷
-    offset->gyroscopeOffset = FUSION_VECTOR_ZERO; // ÖØÖÃÁãÆ«¹À¼Æ
+    offset->timeout = TIMEOUT * sampleRate;  // ï¿½ï¿½ï¿½ã³¬Ê±ï¿½ï¿½ï¿½ï¿½
+    offset->timer = 0;                       // ï¿½ï¿½ï¿½Ã¼ï¿½Ê±ï¿½ï¿½
+    offset->gyroscopeOffset = FUSION_VECTOR_ZERO; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½
 }
 
 /**
- * @brief ¸üÐÂÍÓÂÝÒÇÁãÆ«Ð£Õý
- * @param offset Ð£Õý½á¹¹ÌåÖ¸Õë
- * @param gyroscope Ô­Ê¼ÍÓÂÝÒÇÊý¾Ý
- * @return Ð£ÕýºóµÄÍÓÂÝÒÇÊý¾Ý
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«Ð£ï¿½ï¿½
+ * @param offset Ð£ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
+ * @param gyroscope Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @return Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 FusionVector FusionOffsetUpdate(FusionOffset *const offset, FusionVector gyroscope) {
-    // ÏÈ¼õÈ¥µ±Ç°ÁãÆ«¹À¼Æ
+    // ï¿½È¼ï¿½È¥ï¿½ï¿½Ç°ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½
     gyroscope = FusionVectorSubtract(gyroscope, offset->gyroscopeOffset);
     
-    // Èç¹ûÍÓÂÝÒÇÊý¾Ý³¬¹ýãÐÖµ£¬ÖØÖÃ¼ÆÊ±Æ÷
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½Ê±ï¿½ï¿½
     if ((fabsf(gyroscope.axis.x) > THRESHOLD) || 
        (fabsf(gyroscope.axis.y) > THRESHOLD) || 
        (fabsf(gyroscope.axis.z) > THRESHOLD)) {
@@ -475,13 +522,13 @@ FusionVector FusionOffsetUpdate(FusionOffset *const offset, FusionVector gyrosco
         return gyroscope;
     }
     
-    // Èç¹û¼ÆÊ±Æ÷Î´³¬Ê±£¬Ö±½Ó·µ»Ø
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Î´ï¿½ï¿½Ê±ï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½
     if (offset->timer < offset->timeout) {
         offset->timer++;
         return gyroscope;
     }
     
-    // ¸üÐÂÁãÆ«¹À¼Æ(µÍÍ¨ÂË²¨)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Í¨ï¿½Ë²ï¿½)
     offset->gyroscopeOffset = FusionVectorAdd(offset->gyroscopeOffset, 
         FusionVectorMultiplyScalar(gyroscope, offset->filterCoefficient));
     
@@ -489,34 +536,34 @@ FusionVector FusionOffsetUpdate(FusionOffset *const offset, FusionVector gyrosco
 }
 
 //------------------------------------------------------------------------------
-// ÌÝ¶ÈÏÂ½µ×ËÌ¬½âËã
+// ï¿½Ý¶ï¿½ï¿½Â½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
 void Madgwick_updateIMU(float gx, float gy, float gz, float ax, float ay, float az) {
 	float recipNorm;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;
 	float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2, q0q0, q1q1, q2q2, q3q3;
 
-	// ½«ÍÓÂÝÒÇµÄµ¥Î»´Ó ¶È/Ãë ×ª»»Îª »¡¶È/Ãë
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÇµÄµï¿½Î»ï¿½ï¿½ ï¿½ï¿½/ï¿½ï¿½ ×ªï¿½ï¿½Îª ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½
 	gx *= 0.0174533f;
 	gy *= 0.0174533f;
 	gz *= 0.0174533f;
 
-	// ¸ù¾ÝÍÓÂÝÒÇµÄ¶ÁÊý¼ÆËãËÄÔªÊýµÄ±ä»¯ÂÊ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÇµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½Ä±ä»¯ï¿½ï¿½
 	qDot1 = 0.5f * (-madgwickParam.q1 * gx - madgwickParam.q2 * gy - madgwickParam.q3 * gz);
 	qDot2 = 0.5f * (madgwickParam.q0 * gx + madgwickParam.q2 * gz - madgwickParam.q3 * gy);
 	qDot3 = 0.5f * (madgwickParam.q0 * gy - madgwickParam.q1 * gz + madgwickParam.q3 * gx);
 	qDot4 = 0.5f * (madgwickParam.q0 * gz + madgwickParam.q1 * gy - madgwickParam.q2 * gx);
 
-	// ½öµ±¼ÓËÙ¶È¼Æ¶ÁÊýÓÐÐ§Ê±²Å¼ÆËã·´À¡£¨±ÜÃâ¹éÒ»»¯Ê±³öÏÖ NaN£©
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Ð§Ê±ï¿½Å¼ï¿½ï¿½ã·´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ NaNï¿½ï¿½
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 
-		// ½«¼ÓËÙ¶È¼ÆµÄ²âÁ¿Öµ¹éÒ»»¯
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼ÆµÄ²ï¿½ï¿½ï¿½Öµï¿½ï¿½Ò»ï¿½ï¿½
 		recipNorm = FusionFastInverseSqrt(ax * ax + ay * ay + az * az);
 		ax *= recipNorm;
 		ay *= recipNorm;
 		az *= recipNorm;
 
-		// ¸¨Öú±äÁ¿£¬ÒÔ±ÜÃâÖØ¸´¼ÆËã
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½
 		_2q0 = 2.0f * madgwickParam.q0;
 		_2q1 = 2.0f * madgwickParam.q1;
 		_2q2 = 2.0f * madgwickParam.q2;
@@ -531,13 +578,13 @@ void Madgwick_updateIMU(float gx, float gy, float gz, float ax, float ay, float 
 		q2q2 = madgwickParam.q2 * madgwickParam.q2;
 		q3q3 = madgwickParam.q3 * madgwickParam.q3;
 
-		// ÌÝ¶ÈÏÂ½µËã·¨µÄÐ£Õý²½Öè
-		// s0-s3 ÊÇÄ¿±êº¯Êý£¨Îó²îº¯Êý£©µÄÌÝ¶È
+		// ï¿½Ý¶ï¿½ï¿½Â½ï¿½ï¿½ã·¨ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// s0-s3 ï¿½ï¿½Ä¿ï¿½êº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½îº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½
 		s0 = _4q0 * q2q2 + _2q2 * ax + _4q0 * q1q1 - _2q1 * ay;
 		s1 = _4q1 * q3q3 - _2q3 * ax + 4.0f * q0q0 * madgwickParam.q1 - _2q0 * ay - _4q1 + _8q1 * q1q1 + _8q1 * q2q2 + _4q1 * az;
 		s2 = 4.0f * q0q0 * madgwickParam.q2 + _2q0 * ax + _4q2 * q3q3 - _2q3 * ay - _4q2 + _8q2 * q1q1 + _8q2 * q2q2 + _4q2 * az;
 		s3 = 4.0f * q1q1 * madgwickParam.q3 - _2q1 * ax + 4.0f * q2q2 * madgwickParam.q3 - _2q2 * ay;
-		recipNorm = FusionFastInverseSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3); // ¹éÒ»»¯ÌÝ¶È
+		recipNorm = FusionFastInverseSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3); // ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ý¶ï¿½
 		s0 *= recipNorm;
 		s1 *= recipNorm;
 		s2 *= recipNorm;
@@ -554,26 +601,26 @@ void Madgwick_updateIMU(float gx, float gy, float gz, float ax, float ay, float 
 		madgwickParam.v_s2 = madgwickParam.momentum * madgwickParam.v_s2 + grad_step2;
 		madgwickParam.v_s3 = madgwickParam.momentum * madgwickParam.v_s3 + grad_step3;
 
-		// ?????§Ø????????????
+		// ?????ï¿½ï¿½????????????
 		qDot1 -= madgwickParam.v_s0;
 		qDot2 -= madgwickParam.v_s1;
 		qDot3 -= madgwickParam.v_s2;
 		qDot4 -= madgwickParam.v_s3;
 		
-		// Ó¦ÓÃ·´À¡²½Öè£¬½«Îó²îÌÝ¶È·´À¡¸øËÄÔªÊýµÄ±ä»¯ÂÊ
+		// Ó¦ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½Ä±ä»¯ï¿½ï¿½
 		qDot1 -= madgwickParam.beta * s0;
 		qDot2 -= madgwickParam.beta * s1;
 		qDot3 -= madgwickParam.beta * s2;
 		qDot4 -= madgwickParam.beta * s3;
 	}
 
-	// ¶ÔËÄÔªÊýµÄ±ä»¯ÂÊ½øÐÐ»ý·Ö£¬µÃµ½ÐÂµÄËÄÔªÊý
+	// ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½Ä±ä»¯ï¿½Ê½ï¿½ï¿½Ð»ï¿½ï¿½Ö£ï¿½ï¿½Ãµï¿½ï¿½Âµï¿½ï¿½ï¿½Ôªï¿½ï¿½
 	madgwickParam.q0 += qDot1 * madgwickParam.invSampleFreq;
 	madgwickParam.q1 += qDot2 * madgwickParam.invSampleFreq;
 	madgwickParam.q2 += qDot3 * madgwickParam.invSampleFreq;
 	madgwickParam.q3 += qDot4 * madgwickParam.invSampleFreq;
 
-	// ½«ÐÂµÄËÄÔªÊý¹éÒ»»¯
+	// ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 	recipNorm = FusionFastInverseSqrt(madgwickParam.q0 * madgwickParam.q0 + madgwickParam.q1 * madgwickParam.q1 + madgwickParam.q2 * madgwickParam.q2 + madgwickParam.q3 * madgwickParam.q3);
 	madgwickParam.q0 *= recipNorm;
 	madgwickParam.q1 *= recipNorm;

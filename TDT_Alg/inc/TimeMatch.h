@@ -6,20 +6,20 @@
 class TimeSimultaneity
 {
 public:
-	TimeSimultaneity(int bit_rate = 460800);
+	TimeSimultaneity(int bit_rate = 0);
 
-	void Get_time_diff(double vision_time, int sizeofRecvStruct); // 获取视觉时间和主控时间差值
+	void Get_time_diff(double vision_time_us, int recv_size, uint64_t mcu_receive_time_us);
 
-	double GetSimuTime_s(); // 返回同步后的mcu时间(s)  （校准后）
+	double GetSimuTime_us();
 
-	double GetSimuTime_s(double mcuTime); // 将mcu时间转化为视觉时间 单位（s）
+	double GetSimuTime_us(double mcu_time_us);
 
-	double GetImu_VisionTime(double imuTime, int sizeofSendStruct);
+	double GetImu_VisionTime(double imu_time_s, int send_size);
 
 private:
-	int bit_rate_=460800; // 串口波特率
+	int bit_rate_ = 0; // USB 为 0；串口链路填写实际波特率
 
-	double time_diff=0; // 时间差值
+	double time_diff_us_ = 0.0; // MCU 时间减视觉时间，单位 us
 };
 
 #endif

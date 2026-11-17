@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<JScopeProject>
+    <FileVersion major="1" minor="1" />
+    <Project>
+        <Configuration>
+            <JLink>
+                <Options Connection="1" IsRTTSession="0" IsRTTWithTimeStamp="0" SamplingPeriod="100" SerialNo="0" JTAG_IRPre="0" JTAG_DRPre="0" IP="" TargetDevice="Cortex-M4" TargetInterface="JTAG" InterfaceSpeed="4000" />
+            </JLink>
+            <ElfFile Name="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project\Objects\TDT-Frame-2026.axf" />
+            <Scope>
+                <Options TimeResolutionUs="1000000" />
+            </Scope>
+            <Trigger>
+                <Options Level="0" Symbol="setValue" On="0" Auto="0" Rise="0" Fall="0" />
+            </Trigger>
+        </Configuration>
+        <Windows>
+            <Graph Show="1" />
+            <Watch Show="1" />
+        </Windows>
+        <SelectedSymbols>
+            <Symbol>
+                <Options Name="setValue" Address="0x20001AD0" Type="double" TypeID="2" Size="8" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="-126.869" YMaxSampled="111.695" YAvgSampled="3.31945" Offset="4" ShowInGraph="0" YOffset="0" IsAutoConfig="0" YResolution="20" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidInner.setValue" />
+            </Symbol>
+            <Symbol>
+                <Options Name="fbValue" Address="0x20001AD8" Type="double" TypeID="2" Size="8" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="-107.332" YMaxSampled="92.7805" YAvgSampled="0.0514422" Offset="12" ShowInGraph="0" YOffset="0" IsAutoConfig="0" YResolution="20" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidInner.fbValue" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20001AF8" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="-67.9488" YMaxSampled="39.7111" YAvgSampled="3.55015" Offset="20" ShowInGraph="0" YOffset="0" IsAutoConfig="0" YResolution="10" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidInner.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="setValue" Address="0x20001B38" Type="double" TypeID="2" Size="8" GraphColorRed="170" GraphColorGreen="255" GraphColorBlue="255" YMinSampled="-35" YMaxSampled="20" YAvgSampled="2.71687" Offset="24" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="10" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidOuter.setValue" />
+            </Symbol>
+            <Symbol>
+                <Options Name="fbValue" Address="0x20001B40" Type="double" TypeID="2" Size="8" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="-33.9476" YMaxSampled="24.8331" YAvgSampled="2.59169" Offset="32" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="10" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidOuter.fbValue" />
+            </Symbol>
+            <Symbol>
+                <Options Name="error" Address="0x20001B60" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="-10.1563" YMaxSampled="8.87914" YAvgSampled="0.107495" Offset="40" ShowInGraph="0" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Device/src\UAV_gimbal.cpp" DrawStyle="0" NameWithParents=".gimbal.pitch.&lt;Inherited&gt;.pidOuter.error" />
+            </Symbol>
+            <Symbol>
+                <Options Name="watchangle[1]" Address="0x20003EA0" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="-33.9476" YMaxSampled="24.8332" YAvgSampled="2.59206" Offset="44" ShowInGraph="0" YOffset="0" IsAutoConfig="0" YResolution="5" MaxValue="-2147483648" File="D:\T-DT\26season-MyFile\Drone\TDT_2026Drone\2026_Drone_mainControl\Project/../TDT_Task/src\imu_task.cpp" DrawStyle="0" NameWithParents=".watchangle[1]" />
+            </Symbol>
+        </SelectedSymbols>
+    </Project>
+</JScopeProject>

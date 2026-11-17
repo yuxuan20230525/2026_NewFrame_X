@@ -1,5 +1,8 @@
 # TDT-Frame
 
+> 2026-10-31：本目录已接入用户云台模块。Keil入口为 `Project/TDTFrame2026.uvprojx`。
+> [移植内容、逐项差异与待完成项](docs/migration_2026-10-31.md)。
+
 ============
 
 ![](@ref T-DT.jpg)  

@@ -1,5 +1,5 @@
 /*
-Description: BMI088ÍÓÂÝÒÇ³õÊ¼»¯ÒÔ¼°Êý¾Ý¶ÁÈ¡
+Description: BMI088ï¿½ï¿½ï¿½ï¿½ï¿½Ç³ï¿½Ê¼ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½È¡
 Author: liuskywalkerjskd
 */
 #include "bmi088.h"
@@ -8,9 +8,9 @@ Author: liuskywalkerjskd
 #include "imu_task.h"
 
 volatile u8 bmi_OK __attribute__((section(".bss.NO_INIT")));
-// Ê¹ÓÃBMI088ÍÓÂÝÒÇÐèÒª¶ÁÈ¡boardImu->AHRS_data.Angle
+// Ê¹ï¿½ï¿½BMI088ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½È¡boardImu->AHRS_data.Angle
 
-// ÉèÖÃÒ»×éµÍÍ¨ÂË²¨£¬Ñ¡È¡Ð§¹û×îºÃµÄÒ»¸ö
+// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½Ñ¡È¡Ð§ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ò»ï¿½ï¿½
 Lpf2p filter_lpf_10;
 Lpf2p filter_lpf_50;
 Lpf2p filter_lpf_100;
@@ -26,11 +26,11 @@ float watchgyro[11];
 float watchaccx[10], watchaccy[10], watchaccz[10];
 float record_ori ;
 
-// µÍÍ¨ÂË²¨ÂË³ý¸ßÆµÔëÉù
+// ï¿½ï¿½Í¨ï¿½Ë²ï¿½ï¿½Ë³ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½
 Lpf2p gyrolpf[3] ;
 Lpf2p acclpf[3] ;
 
-// ÉèÖÃ¿¨¶ûÂüÂË²¨ÂË³ýñîºÏÆµÓòµÄÔëÉù
+// ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Kf accxkf, accykf, acczkf;
 Kf gyroxkf, gyroykf, gyrozkf;
 
@@ -38,7 +38,7 @@ float kfq=0, kfr=0;
 float gyroq=0, gyror=0;
 float watchkf=0;
 
-float watchtemp = 0; // imuÎÂ¶È£¨ÉãÊÏ¶È£©
+float watchtemp = 0; // imuï¿½Â¶È£ï¿½ï¿½ï¿½ï¿½Ï¶È£ï¿½
 
 #if IF_USE_DJIC
 void CS1_ON()
@@ -66,7 +66,7 @@ void CS2_OFF()
 /**
  * @brief BMI088 Accelerator configuration data and Error Status
  */
-// °å×ÓÉÏÃ»ÓÐº¸½ÓÖÐ¶Ï½Ç£¬Òò´ËÎÞÐèÅäÖÃÖÐ¶Ï
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½ï¿½ï¿½Ð¶Ï½Ç£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 static uint8_t Accel_Register_ConfigurationData_ErrorStatus[BMI088_WRITE_ACCEL_REG_NUM][3] =
 	{
 		/* Turn on accelerometer */
@@ -91,7 +91,7 @@ static uint8_t Accel_Register_ConfigurationData_ErrorStatus[BMI088_WRITE_ACCEL_R
 /**
  * @brief BMI088 Gyro configuration data and Error Status
  */
-// °å×ÓÉÏÃ»ÓÐº¸½ÓÖÐ¶Ï½Ç£¬Òò´ËÎÞÐèÅäÖÃÖÐ¶Ï
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½ï¿½ï¿½Ð¶Ï½Ç£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 static uint8_t Gyro_Register_ConfigurationData_ErrorStatus[BMI088_WRITE_GYRO_REG_NUM][3] =
 	{
 		/* Angular rate and resolution */
@@ -112,21 +112,21 @@ static uint8_t Gyro_Register_ConfigurationData_ErrorStatus[BMI088_WRITE_GYRO_REG
 		/* interrupt map register */
 		//    {BMI088_GYRO_INT3_INT4_IO_MAP, BMI088_GYRO_DRDY_IO_INT3, BMI088_GYRO_INT3_INT4_IO_MAP_ERROR}
 };
-// ¹¹Ôìº¯Êý
+// ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 Bmi088::Bmi088(SPI_TypeDef *spix, int baud) : Spi(spix, baud)
 {
-	float BMI088_ACCEL_SEN = BMI088_ACCEL_6G_SEN; // °´ÕÕÉèÖÃÐÞ¸Ä
-	float BMI088_GYRO_SEN = BMI088_GYRO_2000_SEN; // °´ÕÕÉèÖÃÐÞ¸Ä
+	float BMI088_ACCEL_SEN = BMI088_ACCEL_6G_SEN; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
+	float BMI088_GYRO_SEN = BMI088_GYRO_2000_SEN; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½
 	imuview = this;
 	accValueFector = BMI088_ACCEL_SEN;
 	gyroDpsFector = 1 / 16.4f;
 	;
 }
 /*
-	¶ÔÓÚV6Ö÷¿ØµÄBMI088ÍÓÂÝÒÇ²å°å£¬²ÉÈ¡µÄÊÇPA4µ¥Æ¬Ñ¡½Å¼ÓÈ¡·´µçÂ·ÊµÏÖ¼ÓËÙ¶È¼ÆºÍÍÓÂÝÒÇÁ½¸ö´«¸ÐÆ÷µÄÆ¬Ñ¡
-	Òò´ËÔÚSPIÆ¬Ñ¡µÄÊ±ºòPA4 À­¸ß_À­µÍ ºÍ À­µÍ_À­¸ß ·Ö±ðÓÃÓÚÆ¬Ñ¡Á½¸ö´«¸ÐÆ÷
+	ï¿½ï¿½ï¿½ï¿½V6ï¿½ï¿½ï¿½Øµï¿½BMI088ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½å£¬ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½PA4ï¿½ï¿½Æ¬Ñ¡ï¿½Å¼ï¿½È¡ï¿½ï¿½ï¿½ï¿½Â·Êµï¿½Ö¼ï¿½ï¿½Ù¶È¼Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬Ñ¡
+	ï¿½ï¿½ï¿½ï¿½ï¿½SPIÆ¬Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½PA4 ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 */
-u8 Bmi088::acc_readByte(u8 regAddr) // ¼ÓËÙ¶È¼Æµ¥×Ö½Ú¶ÁÈ¡
+u8 Bmi088::acc_readByte(u8 regAddr) // ï¿½ï¿½ï¿½Ù¶È¼Æµï¿½ï¿½Ö½Ú¶ï¿½È¡
 {
 #if IF_USE_DJIC
 	CS1_ON();
@@ -138,7 +138,7 @@ u8 Bmi088::acc_readByte(u8 regAddr) // ¼ÓËÙ¶È¼Æµ¥×Ö½Ú¶ÁÈ¡
 
 	u8 val;
 	readWriteByte(regAddr | 0x80); // Register. MSB 1 is read instruction.
-	readWriteByte(0x00);		   // ¼ÓËÙ¶È¼ÆÕâÀïÐèÒª¶à²éÑ¯Ò»´Î
+	readWriteByte(0x00);		   // ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ñ¯Ò»ï¿½ï¿½
 	val = readWriteByte(0x00);	   // Send DUMMY to read data
 
 #if IF_USE_DJIC
@@ -151,7 +151,7 @@ u8 Bmi088::acc_readByte(u8 regAddr) // ¼ÓËÙ¶È¼Æµ¥×Ö½Ú¶ÁÈ¡
 	return val;
 }
 
-void Bmi088::acc_readBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½Ú¶ÁÈ¡
+void Bmi088::acc_readBytes(u8 regAddr, u8 len, u8 *data) // ï¿½ï¿½ï¿½Ù¶È¼Æ¶ï¿½ï¿½Ö½Ú¶ï¿½È¡
 {
 #if IF_USE_DJIC
 	CS1_ON();
@@ -162,7 +162,7 @@ void Bmi088::acc_readBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½Ú¶ÁÈ¡
 #endif
 
 	readWriteByte(regAddr | 0x80); // Register. MSB 1 is read instruction.
-	readWriteByte(regAddr | 0x80); // ¼ÓËÙ¶È¼ÆÕâÀïÐèÒª¶à¶ÁÒ»´Î
+	readWriteByte(regAddr | 0x80); // ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 	for (u8 i = 0; i < len; i++)
 	{
 		data[i] = readWriteByte(0x00); // Send DUMMY to read data
@@ -176,7 +176,7 @@ void Bmi088::acc_readBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½Ú¶ÁÈ¡
 #endif
 }
 
-void Bmi088::acc_writeByte(u8 regAddr, u8 data) // ¼ÓËÙ¶È¼Æµ¥×Ö½ÚÐ´Èë
+void Bmi088::acc_writeByte(u8 regAddr, u8 data) // ï¿½ï¿½ï¿½Ù¶È¼Æµï¿½ï¿½Ö½ï¿½Ð´ï¿½ï¿½
 {
 #if IF_USE_DJIC
 	CS1_ON();
@@ -196,7 +196,7 @@ void Bmi088::acc_writeByte(u8 regAddr, u8 data) // ¼ÓËÙ¶È¼Æµ¥×Ö½ÚÐ´Èë
 #endif
 }
 
-void Bmi088::acc_writeBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½ÚÐ´Èë
+void Bmi088::acc_writeBytes(u8 regAddr, u8 len, u8 *data) // ï¿½ï¿½ï¿½Ù¶È¼Æ¶ï¿½ï¿½Ö½ï¿½Ð´ï¿½ï¿½
 {
 #if IF_USE_DJIC
 	CS1_ON();
@@ -208,7 +208,7 @@ void Bmi088::acc_writeBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½ÚÐ´Èë
 	readWriteByte(regAddr & 0x7F); // Register. MSB 0 is write instruction.
 	for (u8 i = 0; i < len; i++)
 	{
-		readWriteByte(data[i++]); // Send Data to write
+		readWriteByte(data[i]); // Send Data to write
 	}
 #if IF_USE_DJIC
 	CS1_OFF();
@@ -219,7 +219,7 @@ void Bmi088::acc_writeBytes(u8 regAddr, u8 len, u8 *data) // ¼ÓËÙ¶È¼Æ¶à×Ö½ÚÐ´Èë
 #endif
 }
 
-u8 Bmi088::gyro_toggle_readByte(u8 regAddr) // ÍÓÂÝÒÇµ¥×Ö½Ú¶ÁÈ¡_Æ¬Ñ¡È¡·´µçÂ·
+u8 Bmi088::gyro_toggle_readByte(u8 regAddr) // ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½Ö½Ú¶ï¿½È¡_Æ¬Ñ¡È¡ï¿½ï¿½ï¿½ï¿½Â·
 {
 #if IF_USE_DJIC
 	CS2_ON();
@@ -239,7 +239,7 @@ u8 Bmi088::gyro_toggle_readByte(u8 regAddr) // ÍÓÂÝÒÇµ¥×Ö½Ú¶ÁÈ¡_Æ¬Ñ¡È¡·´µçÂ·
 	return val;
 }
 
-void Bmi088::gyro_toggle_readBytes(u8 regAddr, u8 len, u8 *data) // ÍÓÂÝÒÇ¶à×Ö½Ú¶ÁÈ¡_Æ¬Ñ¡È¡·´µçÂ·
+void Bmi088::gyro_toggle_readBytes(u8 regAddr, u8 len, u8 *data) // ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½Ö½Ú¶ï¿½È¡_Æ¬Ñ¡È¡ï¿½ï¿½ï¿½ï¿½Â·
 {
 #if IF_USE_DJIC
 	CS2_ON();
@@ -260,7 +260,7 @@ void Bmi088::gyro_toggle_readBytes(u8 regAddr, u8 len, u8 *data) // ÍÓÂÝÒÇ¶à×Ö½Ú
 #endif
 }
 
-void Bmi088::gyro_toggle_writeByte(u8 regAddr, u8 data) // ÍÓÂÝÒÇµ¥×Ö½ÚÐ´Èë_Æ¬Ñ¡È¡·´µçÂ·
+void Bmi088::gyro_toggle_writeByte(u8 regAddr, u8 data) // ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½Ö½ï¿½Ð´ï¿½ï¿½_Æ¬Ñ¡È¡ï¿½ï¿½ï¿½ï¿½Â·
 {
 #if IF_USE_DJIC
 	CS2_ON();
@@ -278,7 +278,7 @@ void Bmi088::gyro_toggle_writeByte(u8 regAddr, u8 data) // ÍÓÂÝÒÇµ¥×Ö½ÚÐ´Èë_Æ¬Ñ¡
 #endif
 }
 
-void Bmi088::gyro_toggle_writeBytes(u8 regAddr, u8 len, u8 *data) // ÍÓÂÝÒÇ¶à×Ö½ÚÐ´Èë_Æ¬Ñ¡È¡·´µçÂ·
+void Bmi088::gyro_toggle_writeBytes(u8 regAddr, u8 len, u8 *data) // ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½Ö½ï¿½Ð´ï¿½ï¿½_Æ¬Ñ¡È¡ï¿½ï¿½ï¿½ï¿½Â·
 {
 #if IF_USE_DJIC
 	CS2_ON();
@@ -289,7 +289,7 @@ void Bmi088::gyro_toggle_writeBytes(u8 regAddr, u8 len, u8 *data) // ÍÓÂÝÒÇ¶à×Ö½
 	readWriteByte(regAddr & 0x7F); // Register. MSB 0 is write instruction.
 	for (u8 i = 0; i < len; i++)
 	{
-		readWriteByte(data[i++]); // Send Data to write
+		readWriteByte(data[i]); // Send Data to write
 	}
 #if IF_USE_DJIC
 	CS2_OFF();
@@ -298,7 +298,7 @@ void Bmi088::gyro_toggle_writeBytes(u8 regAddr, u8 len, u8 *data) // ÍÓÂÝÒÇ¶à×Ö½
 	csOn();
 #endif
 }
-// ¼ÓËÙ¶È¼Æ³õÊ¼»¯
+// ï¿½ï¿½ï¿½Ù¶È¼Æ³ï¿½Ê¼ï¿½ï¿½
 uint16_t Bmi088::acc_init(void)
 {
 	uint8_t res = 0;
@@ -307,7 +307,7 @@ uint16_t Bmi088::acc_init(void)
 
 	res = acc_readByte(BMI088_ACC_CHIP_ID);
 	delayUs(BMI088_COM_WAIT_SENSOR_TIME);
-	// ÐèÒªÏÈ¶ÁÒ»´ÎÇÐ»»µ½SPIÄ£Ê½
+	// ï¿½ï¿½Òªï¿½È¶ï¿½Ò»ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½SPIÄ£Ê½
 	res = acc_readByte(BMI088_ACC_CHIP_ID);
 	delayUs(BMI088_COM_WAIT_SENSOR_TIME);
 
@@ -316,7 +316,7 @@ uint16_t Bmi088::acc_init(void)
 
 	res = acc_readByte(BMI088_ACC_CHIP_ID);
 	delayUs(BMI088_COM_WAIT_SENSOR_TIME);
-	// ÐèÒªÏÈ¶ÁÒ»´ÎÇÐ»»µ½SPIÄ£Ê½
+	// ï¿½ï¿½Òªï¿½È¶ï¿½Ò»ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½SPIÄ£Ê½
 	res = acc_readByte(BMI088_ACC_CHIP_ID);
 	delayUs(BMI088_COM_WAIT_SENSOR_TIME);
 
@@ -326,7 +326,7 @@ uint16_t Bmi088::acc_init(void)
 		return Error_Status;
 	}
 
-	// È·ÈÏ¶Áµ½¼ÓËÙ¶È¼ÆµÄ´æÔÚ£¬½øÈëºóÐøÅäÖÃ
+	// È·ï¿½Ï¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼ÆµÄ´ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	/* config the accelerator sensor */
 	for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_ACCEL_REG_NUM; write_reg_num++)
@@ -352,7 +352,7 @@ uint16_t Bmi088::acc_init(void)
 	Error_Status = BMI088_NO_ERROR;
 	return Error_Status;
 }
-// ÍÓÂÝÒÇ³õÊ¼»¯
+// ï¿½ï¿½ï¿½ï¿½ï¿½Ç³ï¿½Ê¼ï¿½ï¿½
 uint16_t Bmi088::gyro_init(void)
 {
 	uint8_t res = 0;
@@ -375,7 +375,7 @@ uint16_t Bmi088::gyro_init(void)
 		return Error_Status;
 	}
 
-	// È·ÈÏ¶Áµ½ÍÓÂÝÒÇµÄ´æÔÚ£¬½øÈëºóÐøÅäÖÃ
+	// È·ï¿½Ï¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÇµÄ´ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_GYRO_REG_NUM; write_reg_num++)
 	{
@@ -403,24 +403,24 @@ uint16_t Bmi088::gyro_init(void)
 
 void Bmi088::init(void)
 {
-	uint16_t status = BMI088_NO_ERROR; // ¼ÇÂ¼´íÎóÂë
+	uint16_t status = BMI088_NO_ERROR; // ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	Spi::init();
 #if IF_USE_DJIC
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // Ê¹ÄÜGPIOAÊ±ÖÓ
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); // Ê¹ÄÜGPIOBÊ±ÖÓ
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // Ê¹ï¿½ï¿½GPIOAÊ±ï¿½ï¿½
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); // Ê¹ï¿½ï¿½GPIOBÊ±ï¿½ï¿½
 
 	GPIO_InitTypeDef gpioInitStructure;
-	gpioInitStructure.GPIO_Pin = GPIO_Pin_4; // PB5~7¸´ÓÃ¹¦ÄÜÊä³ö
+	gpioInitStructure.GPIO_Pin = GPIO_Pin_4; // PB5~7ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	gpioInitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	gpioInitStructure.GPIO_OType = GPIO_OType_PP;	  // ÍÆÍìÊä³ö
+	gpioInitStructure.GPIO_OType = GPIO_OType_PP;	  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	gpioInitStructure.GPIO_Speed = GPIO_Speed_100MHz; // 100MHz
-	gpioInitStructure.GPIO_PuPd = GPIO_PuPd_UP;		  // ÉÏÀ­
-	GPIO_Init(GPIOA, &gpioInitStructure);			  // ³õÊ¼»¯
+	gpioInitStructure.GPIO_PuPd = GPIO_PuPd_UP;		  // ï¿½ï¿½ï¿½ï¿½
+	GPIO_Init(GPIOA, &gpioInitStructure);			  // ï¿½ï¿½Ê¼ï¿½ï¿½
 
-	gpioInitStructure.GPIO_Pin = GPIO_Pin_0; // PB5~7¸´ÓÃ¹¦ÄÜÊä³ö
-	GPIO_Init(GPIOB, &gpioInitStructure);	 // ³õÊ¼»¯
+	gpioInitStructure.GPIO_Pin = GPIO_Pin_0; // PB5~7ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	GPIO_Init(GPIOB, &gpioInitStructure);	 // ï¿½ï¿½Ê¼ï¿½ï¿½
 
 #endif
 
@@ -432,9 +432,9 @@ void Bmi088::init(void)
 	if (bmi_OK == 0)
 	{
 		delayMs(50);
-		do // Ö±µ½ÅäÖÃÎÞerrorÎªÖ¹
+		do // Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½errorÎªÖ¹
 		{
-			status = BMI088_NO_ERROR; // Ã¿´ÎÅäÖÃÖ®Ç°ÖØÖÃ´íÎóÂë
+			status = BMI088_NO_ERROR; // Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½
 			status |= acc_init();
 			delayMs(2);
 			status |= gyro_init();
@@ -443,19 +443,23 @@ void Bmi088::init(void)
 	}
 #else
 	delayMs(50);
-	do // Ö±µ½ÅäÖÃÎÞerrorÎªÖ¹
 	{
-		status = BMI088_NO_ERROR; // Ã¿´ÎÅäÖÃÖ®Ç°ÖØÖÃ´íÎóÂë
-		status |= acc_init();
-		delayMs(2);
-		status |= gyro_init();
-		delayMs(2);
-	} while (status);
+		int retries = 0;
+		do // ç›´åˆ°ä¸æŠ¥errorä¸ºæ­¢ï¼Œæœ€å¤šé‡è¯•10æ¬¡
+		{
+			status = BMI088_NO_ERROR;
+			status |= acc_init();
+			delayMs(2);
+			status |= gyro_init();
+			delayMs(2);
+		} while (status && ++retries < 10);
+		Error_Status = status;
+	}
 #endif
 
-	ImuCalc::init(); // ³õÊ¼»¯½âËã
+	ImuCalc::init(); // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	// ³õÊ¼»¯ÂË²¨Æ÷
+	// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½
 	filter_lpf_10.SetCutoffFreq(500, 10);
 	filter_lpf_50.SetCutoffFreq(500, 50);
 	filter_lpf_100.SetCutoffFreq(500, 100);
@@ -469,15 +473,15 @@ void Bmi088::init(void)
 	
 	for(int i = 0 ; i<3 ; ++i)
 	{
-		gyrolpf[i].SetCutoffFreq(500,50) ;
+		gyrolpf[i].SetCutoffFreq(500,150) ;
 		acclpf[i].SetCutoffFreq(500,50);
 	}
 
-	// ³õÊ¼»¯ÂË²¨Æ÷²ÎÊý
+	// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	kfq = 10;
 	kfr = 100;
-	gyroq = 15; //´ó¸ÅÈ¡RµÄÊ®·ÖÖ®Ò»
-	gyror = 120; //IMUÍÓÂÝÒÇÊý¾Ý·½²îÔ¼ÎªÕâ¸ö
+	gyroq = 15; //ï¿½ï¿½ï¿½È¡Rï¿½ï¿½Ê®ï¿½ï¿½Ö®Ò»
+	gyror = 120; //IMUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½Ô¼Îªï¿½ï¿½ï¿½
 
 	bmi_OK = 1;
 
@@ -486,7 +490,7 @@ void Bmi088::init(void)
 	return;
 }
 
-// »ñÈ¡È«²¿Êý¾Ý
+// ï¿½ï¿½È¡È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void Bmi088::get6AxisRawData(void)
 {
 	uint8_t buf[8] = {0};
@@ -510,7 +514,7 @@ void Bmi088::get6AxisRawData(void)
 	gyroRaw[1] = (int16_t)((buf[3] << 8) | buf[2]);
 	gyroRaw[2] = (int16_t)((buf[5] << 8) | buf[4]);
 }
-// »ñÈ¡ÍÓÂÝÒÇ¶ÁÊý
+// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½
 void Bmi088::get3AxisGyroRawData(void)
 {
 	uint8_t buf[8] = {0};
@@ -520,7 +524,7 @@ void Bmi088::get3AxisGyroRawData(void)
 	gyroRaw[1] = (int16_t)((buf[3] << 8) | buf[2]);
 	gyroRaw[2] = (int16_t)((buf[5] << 8) | buf[4]);
 }
-// »ñÈ¡¼ÓËÙ¶È¼Æ¶ÁÊý
+// ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ù¶È¼Æ¶ï¿½ï¿½ï¿½
 void Bmi088::get3AxisAccRawData(void)
 {
 	uint8_t buf[8] = {0};
@@ -530,7 +534,7 @@ void Bmi088::get3AxisAccRawData(void)
 	accRaw[1] = (int16_t)((buf[3] << 8) | buf[2]);
 	accRaw[2] = (int16_t)((buf[5] << 8) | buf[4]);
 }
-// »ñÈ¡ÎÂ¶È£¨ÉãÊÏ¶È£©
+// ï¿½ï¿½È¡ï¿½Â¶È£ï¿½ï¿½ï¿½ï¿½Ï¶È£ï¿½
 void Bmi088::getTempRawData(void)
 {
 	uint8_t buf[8] = {0};
@@ -540,7 +544,7 @@ void Bmi088::getTempRawData(void)
 	{
 		tempRaw -= 2048;
 	}
-	tempRaw = BMI088_TEMP_FACTOR * tempRaw + BMI088_TEMP_OFFSET; // ÊýÖµ»»Ëã
+	tempRaw = BMI088_TEMP_FACTOR * tempRaw + BMI088_TEMP_OFFSET; // ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
 	watchtemp = tempRaw;
 }
 
@@ -561,8 +565,8 @@ void Bmi088::GetOriginData()
 		gyro.origin.data[2] = gyroRaw[2];
 	}
 
-	// ¶ÔyawÖáÔ­Ê¼Êý¾ÝÓ¦ÓÃ²»Í¬½ØÖ¹ÆµÂÊµÄµÍÍ¨ÂË²¨£¬¹Û²ìÐ§¹û
-	// ´Ë´¦²»Ó¦Ê¹ÓÃ´øÍ¨ÂË²¨»ò¸ßÍ¨ÂË²¨£¬ÒòÎª×ª¶¯µÄÊý¾ÝÆµÂÊÍùÍùÊÇµÍÆµ£¬²ÉÓÃÕâÁ½ÖÖÂË²¨Æ÷»á½µµÍÁéÃô¶È
+	// ï¿½ï¿½yawï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã²ï¿½Í¬ï¿½ï¿½Ö¹Æµï¿½ÊµÄµï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½Û²ï¿½Ð§ï¿½ï¿½
+	// ï¿½Ë´ï¿½ï¿½ï¿½Ó¦Ê¹ï¿½Ã´ï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½Îª×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½á½µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	//	watchgyro[0] = gyro.origin.data[2] ;
 	//	watchgyro[1] = filter_lpf_50.Apply(gyro.origin.data[2]) ;
@@ -576,10 +580,10 @@ void Bmi088::GetOriginData()
 	//	watchgyro[9] = filter_lpf_450.Apply(gyro.origin.data[2]) ;
 	//	watchgyro[10] = filter_lpf_10.Apply(gyro.origin.data[2]) ;
 
-	//	gyro.origin.data[2] = watchgyro[1] ; //Ñ¡È¡ÂË²¨±íÏÖºÃµÄÒ»×éÂË²¨½á¹ûµ±×÷yawÖáÔ­Ê¼Êý¾Ý
+	//	gyro.origin.data[2] = watchgyro[1] ; //Ñ¡È¡ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ÖºÃµï¿½Ò»ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½yawï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½
 
-	// Ó¦ÓÃÂË²¨
-	// ¸ù¾ÝÓ¦ÓÃ³¡¾°Ñ¡ÔñÏàÓ¦µÄÂË²¨·½·¨
+	// Ó¦ï¿½ï¿½ï¿½Ë²ï¿½
+	// ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	//	gyro.origin.data[2] = gyrokf.KalmanFilter(gyrolpf.Apply(gyro.origin.data[2]),gyroq,gyror) ;
 	record_ori = gyro.origin.data[2] ;
@@ -588,14 +592,14 @@ void Bmi088::GetOriginData()
 	gyro.origin.data[1] = gyroykf.KalmanFilter(gyrolpf[1].Apply(gyro.origin.data[1]), gyroq ,gyror);
 	gyro.origin.data[2] = gyrozkf.KalmanFilter(gyrolpf[2].Apply(gyro.origin.data[2]), gyroq ,gyror);
 	
-	// ÍÓÂÝÒÇµÍÍ¨+¿¨¶ûÂüÂË²¨£¬µÍÆµµÍËÙÔË¶¯ÏÂ±íÏÖÁ¼ºÃ£¬Æ¯ÒÆ×îÐ¡£¬µ«¸ßÆµ¾çÁÒÔË¶¯ÏÂ»áÓÐ½Ï¸ßµÄÎó²î
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Í¨+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Â±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½Æ¯ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Â»ï¿½ï¿½Ð½Ï¸ßµï¿½ï¿½ï¿½ï¿½
 	
 	
 //	gyro.origin.data[2] = gyrolpf.Apply(gyro.origin.data[2]) ;
-	// ÍÓÂÝÒÇµÍÍ¨ÂË²¨£¬µÍÆµÔË¶¯ÏÂ±íÏÖÁ¼ºÃ£¬Æ¯ÒÆ±È½ÏÐ¡£¬¸ßÆµÔË¶¯ÏÂ»áÓÐÉÙÐíÎó²î
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ë¶ï¿½ï¿½Â±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½Æ¯ï¿½Æ±È½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Æµï¿½Ë¶ï¿½ï¿½Â»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	//	gyro.origin.data[2] = gyrokf.KalmanFilter(gyro.origin.data[2],gyroq,gyror) ;
-	// ÍÓÂÝÒÇ¿¨¶ûÂüÂË²¨£¬µÍËÙÔË¶¯ÏÂ±íÏÖÁ¼ºÃ£¬Æ¯ÒÆ±È½ÏÐ¡£¬¸ßËÙÔË¶¯ÏÂ»áÓÐÖÍºóºÍÎó²î
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Â±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½Æ¯ï¿½Æ±È½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½Â»ï¿½ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½ï¿½ï¿½
 
 	acc.origin.data[0] = accxkf.KalmanFilter(acclpf[0].Apply(acc.origin.data[0]),kfq,kfr) ;
 	acc.origin.data[1] = accykf.KalmanFilter(acclpf[1].Apply(acc.origin.data[1]),kfq,kfr) ;

@@ -32,7 +32,8 @@ enum _CMD
 	CTRL_IQ = 0XA1,		 // 控制力矩模式
 	CTRL_SPEED = 0XA2,	 // 速度模式
 	MUL_POSITION = 0XA4, // 多圈位置模式
-	MUL_POSI_READ = 0X92 // 读多圈位置
+	MUL_POSI_READ = 0X92, // 读多圈位置
+	SAVE_ZERO = 0x19,
 };
 
 LK_Motor::LK_Motor(MotorType motorType, CAN_TypeDef *_Canx, uint32_t _Std_ID) : Virtual_Motor(motorType, _Canx, _Std_ID,_Std_ID)
@@ -135,7 +136,6 @@ struct
 void LK_Motor::GetOriginData(CanInfo *Info, CanRxMsg *_CanRxMsg)
 {
 	/* 根据命令ID进行相应处理 */
-	uint16_t encoder_mid=0;
 	switch (_CanRxMsg->Data[0])
 	{
 	case CTRL_IQ:
@@ -144,10 +144,10 @@ void LK_Motor::GetOriginData(CanInfo *Info, CanRxMsg *_CanRxMsg)
 		Info->temperature = _CanRxMsg->Data[1];
 		Info->trueCurrent = (int16_t)((uint16_t)(_CanRxMsg->Data[3] << 8) | _CanRxMsg->Data[2]); // 转矩电流
 		Info->speed = (int16_t)((uint16_t)(_CanRxMsg->Data[5] << 8) | _CanRxMsg->Data[4]);
-		encoder_mid = (uint16_t)((uint16_t)(_CanRxMsg->Data[7] << 8) | _CanRxMsg->Data[6]); // 编码器位置
-		Info->encoder=encoder_mid;
+		Info->encoder = (uint16_t)((uint16_t)(_CanRxMsg->Data[7] << 8) | _CanRxMsg->Data[6]); // 编码器位置
 		break;
 	case MUL_POSI_READ:
+		
 		oA.originAngle = 0;
 		oA.originAngle |= (int64_t)_CanRxMsg->Data[1] << 0;  // 将第1字节移动到正确的位置
 		oA.originAngle |= (int64_t)_CanRxMsg->Data[2] << 8;  // 将第2字节移动到正确的位置
@@ -171,6 +171,55 @@ void LK_Motor::SendCurrentAgreement(uint8_t canbuff[8], float canResult)
 	canbuff[4] = current & 0xFF;
 	canbuff[5] = (current >> 8) & 0xFF;
 }
+
+/**
+ * @brief: motorDisable(void)
+ * @param: void
+ * @retval: void
+ * @details: 瓴控电机失能函数
+ */
+void LK_Motor::motorDisable(void)
+{
+    u8 canTxBuf[8];
+	memset(canTxBuf,0,8);
+    canTxBuf[0] = MOTOR_CLOSE;
+	canTx(canTxBuf,motorInfo.can_x == 0 ? CAN1 : CAN2,motorInfo.Send_ID);
+}
+/**
+ * @brief: motorStop(void)
+ * @param: void
+ * @retval: void
+ * @details: 瓴控电机停止函数，电机脱力的时候使用
+ */
+void LK_Motor::motorStop(void)
+{
+    u8 canTxBuf[8];
+	memset(canTxBuf,0,8);
+    canTxBuf[0] = MOTOR_STOP;
+	canTx(canTxBuf,motorInfo.can_x == 0 ? CAN1 : CAN2,motorInfo.Send_ID);
+}
+/**
+ * @brief: motorEnable(void)
+ * @param: void
+ * @retval: void
+ * @details: 瓴控电机使能函数
+ */
+void LK_Motor::motorEnable(void)
+{
+	u8 canTxBuf[8];
+    memset(canTxBuf,0,8);
+    canTxBuf[0] = MOTOR_RUN;
+	canTx(canTxBuf,motorInfo.can_x == 0 ? CAN1 : CAN2,motorInfo.Send_ID);
+}
+
+void LK_Motor::saveZero(void)
+{
+	u8 canTxBuf[8];
+	memset(canTxBuf,0,8);
+    canTxBuf[0] = SAVE_ZERO;
+	canTx(canTxBuf,motorInfo.can_x == 0 ? CAN1 : CAN2,motorInfo.Send_ID);
+}
+
 
 void LKList_Send()
 {

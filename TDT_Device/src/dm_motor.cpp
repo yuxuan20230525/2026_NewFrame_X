@@ -3,24 +3,24 @@ Author: skywalker&codeeartist
 TIME:2024_3_30
 
 *exp:
-*   Motor1 = new DM_Motor(MF9025, CAN2, 0x203);  //´´½¨Virtual_Motor
+*   Motor1 = new DM_Motor(MF9025, CAN2, 0x203);  //ï¿½ï¿½ï¿½ï¿½Virtual_Motor
 *****************************************************
-		Motor_Send(); ·¢ËÍº¯Êý
-		Motor_Receive(CanRxMsg *_CanRxMsg, u8 ifsetzero=0) ½ÓÊÕº¯Êý
-		ÆäÓà¶¼ºÍVirtual_MotorÒ»Ñù
-*****************************************************Ê¹ÓÃµç»úÄÚÖÃ·´À¡Öµ
+		Motor_Send(); ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½
+		Motor_Receive(CanRxMsg *_CanRxMsg, u8 ifsetzero=0) ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½
+		ï¿½ï¿½ï¿½à¶¼ï¿½ï¿½Virtual_MotorÒ»ï¿½ï¿½
+*****************************************************Ê¹ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Öµ
 		Motor1->Auto_ctrlSpeed(50);
 		Motor1->Auto_ctrlPosition(30);
 
-		ÒÔ¼°Ò»¶ÑÃüÁî
+		ï¿½Ô¼ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 */
 
-#include "dm_Motor.h"
+#include "dm_motor.h"
 #include "dbus.h"
 
 
-uint8_t valid_dmmotorNum = 0; // Ò»¹²¶¨ÒåµÄlkµç»ú¶ÔÏó
-DM_Motor *dmList[MAX_DMNUM]={0}; // µç»úÁÐ±í
+uint8_t valid_dmmotorNum = 0; // Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½lkï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+DM_Motor *dmList[MAX_DMNUM]={0}; // ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
 
 int float_to_uint(float x, float x_min, float x_max, int bits)
   {
@@ -40,8 +40,8 @@ int float_to_uint(float x, float x_min, float x_max, int bits)
 
 DM_Motor::DM_Motor(MotorType motorType, CAN_TypeDef *_Canx, uint32_t SendId,uint32_t REC_id) : Virtual_Motor(motorType, _Canx,  SendId,REC_id)
 {
-	Send_Current_Agreement = &DM_Motor::SendCurrentAgreement;//·¢ËÍº¯Êý´«µÝ
-	motor_Calculate.GetOriginData=&GetOriginData; //½ÓÊÜº¯Êý´«µÝ
+	Send_Current_Agreement = &DM_Motor::SendCurrentAgreement;//ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	motor_Calculate.GetOriginData=&GetOriginData; //ï¿½ï¿½ï¿½Üºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	dmList[valid_dmmotorNum] = this;
 	valid_dmmotorNum++;
@@ -50,9 +50,9 @@ DM_Motor::DM_Motor(MotorType motorType, CAN_TypeDef *_Canx, uint32_t SendId,uint
 void DM_Motor::Motor_Send()
 {
 	if (use_my_send)
-		motorSend(canTxBuff); // ×Ô¶¨Òå·¢ËÍº¯Êý
+		motorSend(canTxBuff); // ï¿½Ô¶ï¿½ï¿½å·¢ï¿½Íºï¿½ï¿½ï¿½
 	else
-		motorSend(); // ·¢ËÍº¯Êý
+		motorSend(); // ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½
 }
 
 
@@ -65,10 +65,10 @@ void DM_Motor::GetOriginData(CanInfo *Info, CanRxMsg *_CanRxMsg)
     Info->temperature = (float)(_CanRxMsg->Data[7]);
 }
 
-/// @brief MIT¿ØÖÆÄ£Ê½
-/// @param p_des,v_des,t_ff£º·¶Î§¿ÉÓÉµ÷ÊÔÖúÊÖ½øÐÐÉè¶¨£¬
-/// @param kp,kd£ºKpµÄ·¶Î§Îª[0,500]£¬KdµÄ·¶Î§Îª[0,5]¡£
-/// @note  ¶ÔÎ»ÖÃ½øÐÐ¿ØÖÆÊ±£¬ kd ²»ÄÜ¸³ 0£¬ ·ñÔò»áÔì³Éµç»úÕðµ´£¬ ÉõÖÁÊ§¿Ø¡£
+/// @brief MITï¿½ï¿½ï¿½ï¿½Ä£Ê½
+/// @param p_des,v_des,t_ffï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½
+/// @param kp,kdï¿½ï¿½Kpï¿½Ä·ï¿½Î§Îª[0,500]ï¿½ï¿½Kdï¿½Ä·ï¿½Î§Îª[0,5]ï¿½ï¿½
+/// @note  ï¿½ï¿½Î»ï¿½Ã½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ kd ï¿½ï¿½ï¿½Ü¸ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ðµ´£ï¿½ ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ø¡ï¿½
 void DM_Motor::mitCtrl(float p_des, float v_des, float kp, float kd, float t_ff)
 {
     uint16_t pos_tmp, vel_tmp, kp_tmp, kd_tmp, tor_tmp;
@@ -90,7 +90,7 @@ void DM_Motor::mitCtrl(float p_des, float v_des, float kp, float kd, float t_ff)
     
 }
 
-/// @brief ½øÈëµç»ú
+/// @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void DM_Motor::motorEnable()
 {
     u8 txData[8]={0};
@@ -103,7 +103,7 @@ void DM_Motor::motorEnable()
     
 }
 
-/// @brief ÍË³öµç»ú
+/// @brief ï¿½Ë³ï¿½ï¿½ï¿½ï¿½
 void DM_Motor::motorDisable()
 {
     u8 txData[8]={0};
@@ -117,7 +117,7 @@ void DM_Motor::motorDisable()
 }
 
 
-/// @brief ±£´æÎ»ÖÃÁãµã
+/// @brief ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½
 void DM_Motor::saveZero()
 {
     u8 txData[8]={0};

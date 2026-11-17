@@ -135,16 +135,16 @@ void VOFA::run()
 
 void VOFA::init()
 {
-	Vision.init();
+	vision.init();
 }
 
 void VOFA::run()
 {
-	if (Vision.uartIdle && !sendPackage.empty())
+	if (vision.uartIdle && !sendPackage.empty())
 	{
 		SendMessage &msg = sendPackage.front_element();
 		sendPackage.pop();
-		Vision.DMA_SendData(msg.data, msg.size); // 使用指针和大小进行发送
+		vision.DMA_SendData(msg.data, msg.size); // 使用指针和大小进行发送
 	}
 }
 

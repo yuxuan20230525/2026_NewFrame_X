@@ -103,8 +103,8 @@ void ImuCalc::TDT_ImuInit()
 void ImuCalc::TDT_IMU_update()
 {
 	float half_T = cycle.getCycleT() / 2.0f;
-	float readImuTime = getSysTimeUs();
-	readTime = readImuTime / 1e6f;
+	uint64_t readImuTime = getSysTimeUs();
+	readTime = (double)readImuTime / 1e6;
 	GyroAccUpDate(acc, gyro);
 
 #if USE_AHRS_LIB
@@ -162,9 +162,9 @@ void ImuCalc::TDT_IMU_update()
 	euler.angle.yaw - fusion_temp.lastyaw <= -200 ? fusion_temp.roundnum += 1 : fusion_temp.roundnum = fusion_temp.roundnum;
 
 	
-	FusionAngle.yaw = euler.angle.yaw + 360 * fusion_temp.roundnum ;
-	FusionAngle.roll = euler.angle.roll ;
-	FusionAngle.pitch = euler.angle.pitch ;
+	FusionAngle.yaw = euler.angle.yaw + 360 * fusion_temp.roundnum + yawOffset ;
+	FusionAngle.roll = euler.angle.roll + rollOffset ;
+	FusionAngle.pitch = euler.angle.pitch + pitchOffset ;
 	
 	fusion_temp.lastyaw = euler.angle.yaw ;
 	
@@ -250,7 +250,7 @@ bool ImuCalc::OffSetRun()
 	// 初始化动态范围和累加器
 	if (runningTimes == 0)
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++) 
 		{
 			gyro.dynamicSum.data[i] = 0;
 			gyro.offset_max.data[i] = -FLT_MAX;

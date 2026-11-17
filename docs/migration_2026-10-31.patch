@@ -1,0 +1,260 @@
+--- template/2026_NewFrame.code-workspace
++++ migrated/2026_NewFrame.code-workspace
+@@ -1,7 +1,7 @@
+ {
+ 	"folders": [
+ 		{
+-			"path": "../2026_NewFrame"
++			"path": "."
+ 		}
+ 	],
+ 	"settings": {}
+--- template/Project/TDTFrame2026.uvprojx
++++ migrated/Project/TDTFrame2026.uvprojx
+@@ -415,6 +415,16 @@
+           <GroupName>TDT_Task</GroupName>
+           <Files>
+             <File>
++              <FileName>gimbal.cpp</FileName>
++              <FileType>8</FileType>
++              <FilePath>..\TDT_Task\src\gimbal.cpp</FilePath>
++            </File>
++            <File>
++              <FileName>gimbal.h</FileName>
++              <FileType>5</FileType>
++              <FilePath>..\TDT_Task\inc\gimbal.h</FilePath>
++            </File>
++            <File>
+               <FileName>task_virtual.cpp</FileName>
+               <FileType>8</FileType>
+               <FilePath>..\TDT_Task\src\task_virtual.cpp</FilePath>
+--- template/README.md
++++ migrated/README.md
+@@ -1,4 +1,7 @@
+ # TDT-Frame
++
++> 2026-10-31：本目录已接入用户云台模块。Keil入口为 `Project/TDTFrame2026.uvprojx`。
++> [移植内容、逐项差异与待完成项](docs/migration_2026-10-31.md)。
+ 
+ ============
+ 
+--- template/TDT_Device/inc/dbus.h
++++ migrated/TDT_Device/inc/dbus.h
+@@ -22,7 +22,7 @@
+  * @addtogroup DBUS
+  * @{
+  */
+-#define ISSBUS 0
++#define ISSBUS 1
+  
+ #define SBUS_RX_BUF_NUM 36u ///< DMA数据长度】
+ 
+--- template/TDT_Device/src/dbus.cpp
++++ migrated/TDT_Device/src/dbus.cpp
+@@ -226,7 +226,7 @@
+ 		if (timeIntervalFrom(updateTime) > 500000) // 500ms
+ 	#endif
+ 	{
+-		deforceFlag = deforceFlagvt03;
++		deforceFlag = 1;
+ 		/*离线检测*/
+ 		if (dbusOfflineFlag == 0) // 后面置一代表相当于离线跳变
+ 		{
+@@ -239,7 +239,7 @@
+ 			SW2Tick = UnDefined;
+ 			// 仍然进行按键处理，不过所有键松开
+ 			KeyProcess::keyHandle(0);
+-			deforceFlag = deforceFlagvt03;
++			deforceFlag = 1;
+ 			// 仍然进行任务调度
+ 			taskSchedule();
+ 		}
+--- template/TDT_Task/inc/gimbal.h
++++ migrated/TDT_Task/inc/gimbal.h
+@@ -0,0 +1,49 @@
++#ifndef __GIMBAL_H__
++#define __GIMBAL_H__
++
++#include "motor.h"
++#include "pid.h"
++
++class Gimbal
++{
++	public :
++		typedef struct
++		{
++			bool  Flag = false;
++			float Yaw_CMD_Speed_DPS = 0.0f;
++			float Pitch_CMD_Speed_DPS = 0.0f;
++		}CMD;
++		void Init(void);
++	    void Update(void);
++	
++	private :
++		typedef enum 
++		{
++			Disbale_Waiting = 0,
++			Enable_Waiting,
++			Enable_Working,
++		}State;
++		PidParam PitchInnerParam{};
++		PidParam PitchOuterParam{};
++		PidParam YawInnerParam{};
++		PidParam YawOuterParam{};
++		
++    	CMD cmd;
++		State state = Disbale_Waiting;
++		
++	    LK_Motor *Motor_Yaw;
++		LK_Motor *Motor_Pitch;
++		
++		float Pitch_Target = 0 ;
++    	float Yaw_Target = 0;
++	
++	    void Get_CMD(void);
++		void State_Change(void);
++		void Update_Location(void);
++};
++
++extern Gimbal gimbal;
++
++
++
++#endif--- template/TDT_Task/inc/imu_task.h
++++ migrated/TDT_Task/inc/imu_task.h
+@@ -17,14 +17,14 @@
+ #include "imu.h"
+ #include "hipnuc_imu.h"
+ // 选某一个陀螺仪。外置 HiPNUC 与板载互斥: 用 HiPNUC 时 HIPNUC_def 置 1、其余置 0。
+-#define MPU6050_def  0
++#define MPU6050_def  1
+ #define Scha634_03_def 0
+ #define BMI088_def 0
+ #define ICM45686_def 0
+ #define HIPNUC_def 0  // 外置 HiPNUC HI91 (USART1/4-pin口 + SYNC_IN), 与板载 BMI088 互斥, 见 hipnuc_imu.h
+ // 失效降级: 主 HiPNUC + 热备板载 BMI088 同时初始化, 线掉自动降级。
+ // 置 1 时独立于上面互斥宏(忽略 BMI088_def/HIPNUC_def), 双 IMU 都跑。
+-#define HIPNUC_FAILOVER 1
++#define HIPNUC_FAILOVER 0
+ #define HIPNUC_FAILOVER_SW_TICKS  0  // 连续丢帧多少拍(1ms)→转软同步(发 ONTIME, 留 HiPNUC)
+ #define HIPNUC_FAILOVER_BMI_TICKS 2000  // 连续丢帧多少拍→切板载 BMI088(锁定到重启)
+ #define ELLI_CNT 9
+--- template/TDT_Task/src/gimbal.cpp
++++ migrated/TDT_Task/src/gimbal.cpp
+@@ -0,0 +1,98 @@
++#include "stm32f4xx.h"                  // Device header
++#include "gimbal.h"
++#include "lk_motor.h"
++#include "my_math.h"
++#include "dbus.h"
++
++namespace 
++{
++	constexpr float Max_Encoder = 65536.0f;
++	constexpr float Encoder_to_Deg = 360/Max_Encoder;
++	
++	constexpr float Pitch_Max_Speed = 30.0f ;//单位°每秒
++	constexpr float Yaw_Max_Speed = 30.0f ;//单位°每秒
++	
++	constexpr float kRcFullScale = 660.0f;
++	constexpr float kPitchMinDeg = 61000.0f * Encoder_to_Deg;
++	constexpr float kPitchMaxDeg = 6692.0f * Encoder_to_Deg;
++	
++	// Yaw不过零点
++	constexpr float kYawMinDeg = 1000.0f  * Encoder_to_Deg;
++	constexpr float kYawMaxDeg = 20000.0f * Encoder_to_Deg;
++	
++}
++Gimbal gimbal;
++
++void Gimbal::Get_CMD(void)
++{
++	cmd.Flag = RC.Key.SW[3] == RCS::Down?true:false;//RC.Key.SW[3]
++	cmd.Pitch_CMD_Speed_DPS = RC.Key.CH[2] / kRcFullScale;
++	cmd.Yaw_CMD_Speed_DPS = RC.Key.CH[3] / kRcFullScale;
++}
++
++void Gimbal::State_Change(void)
++{
++	switch(state)
++	{
++		case Disbale_Waiting :
++		{
++			if(dbusOfflineFlag == 0&&cmd.Flag == true)
++			{
++				state = Enable_Waiting;
++			}
++			break;
++		}
++		case Enable_Waiting :
++		{
++			if(cmd.Pitch_CMD_Speed_DPS != 0 ||cmd.Yaw_CMD_Speed_DPS != 0)
++			{
++				state = Enable_Working;
++			}
++			if(dbusOfflineFlag == 1||gimbal.cmd.Flag == false)
++			{
++				state = Disbale_Waiting;
++			}
++			break;
++		}
++		case Enable_Working :
++		{
++			if(dbusOfflineFlag == 1||cmd.Flag == false)
++			{
++				state = Disbale_Waiting;
++			}
++			break;
++		}
++	}
++}
++
++//void Gimbal::Update_Location
++//{
++//	
++//}
++void Gimbal::Init(void)
++{
++	Motor_Yaw = new LK_Motor(MHF7015, CAN1, 0x141);
++	Motor_Pitch = new LK_Motor(MHF7015, CAN1, 0x142);
++}
++
++void Gimbal::Update(void)
++{
++	Get_CMD();
++	State_Change();
++	switch(state)
++	{
++		case Disbale_Waiting :
++		{
++			
++			break;
++		}
++		case Enable_Waiting :
++		{
++			break;
++		}
++		case Enable_Working :
++		{
++			break;
++		}
++	} 
++}--- template/User/board.cpp
++++ migrated/User/board.cpp
+@@ -28,6 +28,7 @@
+ #include "camera_Timematch.h"
+ #include "log.h"
+ #include "customclient.h"
++#include "gimbal.h"
+ 
+ /*初始化完成标志*/
+ u8 Init_OK = 0;
+@@ -93,6 +94,8 @@
+     cameraTM.init();
+ #endif
+ 
++	gimbal.Init();
++
+ //	/*看门狗初始化-喂狗在LED*/
+ 	iwdgInit(4, 50);
+ 	/*  使能全局中断 */

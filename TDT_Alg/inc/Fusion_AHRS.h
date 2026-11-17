@@ -1,8 +1,8 @@
 /**
  * @file Fusion_AHRS.h
  * @author liuskywalkerjskd
- * @brief »ùÓÚ¼ÓËÙ¶È¼ÆºÍÍÓÂÝÒÇµÄAHRSËã·¨ÊµÏÖ
- * @note ÒÆ³ýÁËÔ­°æÖÐËùÓÐ´ÅÁ¦¼ÆÏà¹Ø´úÂë£¬½ö±£Áô¼ÓËÙ¶È¼ÆºÍÍÓÂÝÒÇ²¿·Ö
+ * @brief ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ù¶È¼Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½AHRSï¿½ã·¨Êµï¿½ï¿½
+ * @note ï¿½Æ³ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È¼Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½
  */
 
 #ifndef FUSION_H
@@ -17,10 +17,10 @@ extern "C" {
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
-// ÊýÑ§¿â¶¨Òå
+// ï¿½ï¿½Ñ§ï¿½â¶¨ï¿½ï¿½
 
 /**
- * @brief 3DÏòÁ¿½á¹¹Ìå
+ * @brief 3Dï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
  */
 typedef union {
     float array[3];
@@ -32,20 +32,20 @@ typedef union {
 } FusionVector;
 
 /**
- * @brief ËÄÔªÊý½á¹¹Ìå
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½ï¿½á¹¹ï¿½ï¿½
  */
 typedef union {
     float array[4];
     struct {
-        float w;  // Êµ²¿
-        float x;  // iÐé²¿
-        float y;  // jÐé²¿
-        float z;  // kÐé²¿
+        float w;  // Êµï¿½ï¿½
+        float x;  // iï¿½é²¿
+        float y;  // jï¿½é²¿
+        float z;  // kï¿½é²¿
     } element;
 } FusionQuaternion;
 
 /**
- * @brief 3x3¾ØÕó£¨°´ÐÐÖ÷Ðò´æ´¢£©
+ * @brief 3x3ï¿½ï¿½ï¿½ó£¨°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½
  */
 typedef union {
     float array[3][3];
@@ -57,8 +57,8 @@ typedef union {
 } FusionMatrix;
 
 /**
- * @brief Å·À­½Ç½á¹¹Ìå
- * @note ¹ö×ª(roll)¡¢¸©Ñö(pitch)¡¢Æ«º½(yaw)·Ö±ð¶ÔÓ¦ÈÆX¡¢Y¡¢ZÖáµÄÐý×ª
+ * @brief Å·ï¿½ï¿½ï¿½Ç½á¹¹ï¿½ï¿½
+ * @note ï¿½ï¿½×ª(roll)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(pitch)ï¿½ï¿½Æ«ï¿½ï¿½(yaw)ï¿½Ö±ï¿½ï¿½Ó¦ï¿½ï¿½Xï¿½ï¿½Yï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½×ª
  */
 typedef union {
     float array[3];
@@ -70,27 +70,27 @@ typedef union {
 } FusionEuler;
 
 /**
- * @brief ÁãÏòÁ¿³£Á¿
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 #define FUSION_VECTOR_ZERO ((FusionVector){ .array = {0.0f, 0.0f, 0.0f} })
 
 /**
- * @brief µ¥Î»ÏòÁ¿³£Á¿
+ * @brief ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 #define FUSION_VECTOR_ONES ((FusionVector){ .array = {1.0f, 1.0f, 1.0f} })
 
 /**
- * @brief µ¥Î»ËÄÔªÊý³£Á¿
+ * @brief ï¿½ï¿½Î»ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 #define FUSION_IDENTITY_QUATERNION ((FusionQuaternion){ .array = {1.0f, 0.0f, 0.0f, 0.0f} })
 
 /**
- * @brief µ¥Î»¾ØÕó³£Á¿
+ * @brief ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 #define FUSION_IDENTITY_MATRIX ((FusionMatrix){ .array = {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}} })
 
 /**
- * @brief ÁãÅ·À­½Ç³£Á¿
+ * @brief ï¿½ï¿½Å·ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½
  */
 #define FUSION_EULER_ZERO ((FusionEuler){ .array = {0.0f, 0.0f, 0.0f} })
 
@@ -99,24 +99,24 @@ typedef union {
 #endif
 
 //------------------------------------------------------------------------------
-// ÊýÑ§¿âÄÚÁªº¯Êý
+// ï¿½ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 /**
- * @brief ¶È×ª»¡¶È
+ * @brief ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
  */
 static inline float FusionDegreesToRadians(const float degrees) {
     return degrees * ((float) M_PI / 180.0f);
 }
 
 /**
- * @brief »¡¶È×ª¶È
+ * @brief ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½
  */
 static inline float FusionRadiansToDegrees(const float radians) {
     return radians * (180.0f / (float) M_PI);
 }
 
 /**
- * @brief °²È«µÄ·´ÕýÏÒº¯Êý
+ * @brief ï¿½ï¿½È«ï¿½Ä·ï¿½ï¿½ï¿½ï¿½Òºï¿½ï¿½ï¿½
  */
 static inline float FusionAsin(const float value) {
     if (value <= -1.0f) return (float) M_PI / -2.0f;
@@ -125,7 +125,7 @@ static inline float FusionAsin(const float value) {
 }
 
 /**
- * @brief ¿ìËÙ·´Æ½·½¸ù¼ÆËã£¨½üËÆËã·¨£©
+ * @brief ï¿½ï¿½ï¿½Ù·ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¨ï¿½ï¿½ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½
  */
 static inline float FusionFastInverseSqrt(const float x) {
     typedef union { float f; int32_t i; } Union32;
@@ -135,14 +135,14 @@ static inline float FusionFastInverseSqrt(const float x) {
 }
 
 /**
- * @brief ÅÐ¶ÏÏòÁ¿ÊÇ·ñÎª0
+ * @brief ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îª0
  */
 static inline bool FusionVectorIsZero(const FusionVector vector) {
     return (vector.axis.x == 0.0f) && (vector.axis.y == 0.0f) && (vector.axis.z == 0.0f);
 }
 
 /**
- * @brief ÏòÁ¿¼Ó·¨
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½Ó·ï¿½
  */
 static inline FusionVector FusionVectorAdd(const FusionVector vectorA, const FusionVector vectorB) {
     return (FusionVector){.axis = {
@@ -153,7 +153,7 @@ static inline FusionVector FusionVectorAdd(const FusionVector vectorA, const Fus
 }
 
 /**
- * @brief ÏòÁ¿¼õ·¨
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionVector FusionVectorSubtract(const FusionVector vectorA, const FusionVector vectorB) {
     return (FusionVector){.axis = {
@@ -164,14 +164,14 @@ static inline FusionVector FusionVectorSubtract(const FusionVector vectorA, cons
 }
 
 /**
- * @brief ÏòÁ¿¸÷·ÖÁ¿ÇóºÍ
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 static inline float FusionVectorSum(const FusionVector vector) {
     return vector.axis.x + vector.axis.y + vector.axis.z;
 }
 
 /**
- * @brief ÏòÁ¿±êÁ¿³Ë·¨
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë·ï¿½
  */
 static inline FusionVector FusionVectorMultiplyScalar(const FusionVector vector, const float scalar) {
     return (FusionVector){.axis = {
@@ -182,7 +182,7 @@ static inline FusionVector FusionVectorMultiplyScalar(const FusionVector vector,
 }
 
 /**
- * @brief ÏòÁ¿ÖðÔªËØ³Ë·¨£¨Hadamard»ý£©
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ø³Ë·ï¿½ï¿½ï¿½Hadamardï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionVector FusionVectorHadamardProduct(const FusionVector vectorA, const FusionVector vectorB) {
     return (FusionVector){.axis = {
@@ -193,7 +193,7 @@ static inline FusionVector FusionVectorHadamardProduct(const FusionVector vector
 }
 
 /**
- * @brief ÏòÁ¿²æ»ý
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionVector FusionVectorCrossProduct(const FusionVector vectorA, const FusionVector vectorB) {
     return (FusionVector){.axis = {
@@ -204,28 +204,28 @@ static inline FusionVector FusionVectorCrossProduct(const FusionVector vectorA, 
 }
 
 /**
- * @brief ÏòÁ¿µã»ý
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 static inline float FusionVectorDotProduct(const FusionVector vectorA, const FusionVector vectorB) {
     return FusionVectorSum(FusionVectorHadamardProduct(vectorA, vectorB));
 }
 
 /**
- * @brief ÏòÁ¿Ä£µÄÆ½·½
+ * @brief ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Æ½ï¿½ï¿½
  */
 static inline float FusionVectorMagnitudeSquared(const FusionVector vector) {
     return FusionVectorSum(FusionVectorHadamardProduct(vector, vector));
 }
 
 /**
- * @brief ÏòÁ¿Ä£
+ * @brief ï¿½ï¿½ï¿½ï¿½Ä£
  */
 static inline float FusionVectorMagnitude(const FusionVector vector) {
     return sqrtf(FusionVectorMagnitudeSquared(vector));
 }
 
 /**
- * @brief ÏòÁ¿¹éÒ»»¯
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
  */
 static inline FusionVector FusionVectorNormalise(const FusionVector vector) {
     const float magnitudeReciprocal = FusionFastInverseSqrt(FusionVectorMagnitudeSquared(vector));
@@ -233,7 +233,7 @@ static inline FusionVector FusionVectorNormalise(const FusionVector vector) {
 }
 
 /**
- * @brief ËÄÔªÊý¼Ó·¨
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½ï¿½Ó·ï¿½
  */
 static inline FusionQuaternion FusionQuaternionAdd(const FusionQuaternion quaternionA, const FusionQuaternion quaternionB) {
     return (FusionQuaternion){.element = {
@@ -245,7 +245,7 @@ static inline FusionQuaternion FusionQuaternionAdd(const FusionQuaternion quater
 }
 
 /**
- * @brief ËÄÔªÊý³Ë·¨
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½ï¿½Ë·ï¿½
  */
 static inline FusionQuaternion FusionQuaternionMultiply(const FusionQuaternion quaternionA, const FusionQuaternion quaternionB) {
     return (FusionQuaternion){.element = {
@@ -257,7 +257,7 @@ static inline FusionQuaternion FusionQuaternionMultiply(const FusionQuaternion q
 }
 
 /**
- * @brief ËÄÔªÊýÓëÏòÁ¿³Ë·¨
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë·ï¿½
  */
 static inline FusionQuaternion FusionQuaternionMultiplyVector(const FusionQuaternion quaternion, const FusionVector vector) {
     return (FusionQuaternion){.element = {
@@ -269,7 +269,7 @@ static inline FusionQuaternion FusionQuaternionMultiplyVector(const FusionQuater
 }
 
 /**
- * @brief ËÄÔªÊý¹éÒ»»¯
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
  */
 static inline FusionQuaternion FusionQuaternionNormalise(const FusionQuaternion quaternion) {
     const float magnitudeReciprocal = FusionFastInverseSqrt(
@@ -286,7 +286,7 @@ static inline FusionQuaternion FusionQuaternionNormalise(const FusionQuaternion 
 }
 
 /**
- * @brief ¾ØÕóÓëÏòÁ¿³Ë·¨
+ * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë·ï¿½
  */
 static inline FusionVector FusionMatrixMultiplyVector(const FusionMatrix matrix, const FusionVector vector) {
     return (FusionVector){.axis = {
@@ -297,7 +297,7 @@ static inline FusionVector FusionMatrixMultiplyVector(const FusionMatrix matrix,
 }
 
 /**
- * @brief ËÄÔªÊý×ªÐý×ª¾ØÕó
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½×ªï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionMatrix FusionQuaternionToMatrix(const FusionQuaternion quaternion) {
     const float qwqw = quaternion.element.w * quaternion.element.w;
@@ -321,7 +321,7 @@ static inline FusionMatrix FusionQuaternionToMatrix(const FusionQuaternion quate
 }
 
 /**
- * @brief ËÄÔªÊý×ªÅ·À­½Ç
+ * @brief ï¿½ï¿½Ôªï¿½ï¿½×ªÅ·ï¿½ï¿½ï¿½ï¿½
  */
 static inline FusionEuler FusionQuaternionToEuler(const FusionQuaternion quaternion) {
     const float halfMinusQySquared = 0.5f - quaternion.element.y * quaternion.element.y;
@@ -333,52 +333,61 @@ static inline FusionEuler FusionQuaternionToEuler(const FusionQuaternion quatern
 }
 
 //------------------------------------------------------------------------------
-// µØÇò×ø±êÏµ¶¨Òå
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½
 
 typedef enum {
-    FusionConventionNwu, /* ±±-Î÷-ÉÏ×ø±êÏµ */
-    FusionConventionEnu, /* ¶«-±±-ÉÏ×ø±êÏµ */
-    FusionConventionNed, /* ±±-¶«-ÏÂ×ø±êÏµ */
+    FusionConventionNwu, /* ï¿½ï¿½-ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ */
+    FusionConventionEnu, /* ï¿½ï¿½-ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ */
+    FusionConventionNed, /* ï¿½ï¿½-ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ */
 } FusionConvention;
 
 //------------------------------------------------------------------------------
-// AHRSËã·¨½á¹¹Ìå
+// AHRSï¿½ã·¨ï¿½á¹¹ï¿½ï¿½
 
 typedef struct {
-    FusionConvention convention;  // Ê¹ÓÃµÄ×ø±êÏµÔ¼¶¨
-    float gain;                   // Ëã·¨ÔöÒæ
-    float gyroscopeRange;         // ÍÓÂÝÒÇÁ¿³Ì·¶Î§(¡ã/s)
-    float accelerationRejection;  // ¼ÓËÙ¶È¼Æ¾Ü¾øãÐÖµ
-    unsigned int recoveryTriggerPeriod; // »Ö¸´´¥·¢ÖÜÆÚ
+    FusionConvention convention;  // Ê¹ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ÏµÔ¼ï¿½ï¿½
+    float gain;                   // ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½
+    float gyroscopeRange;         // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì·ï¿½Î§(ï¿½ï¿½/s)
+    float accelerationRejection;  // ï¿½ï¿½ï¿½Ù¶È¼Æ¾Ü¾ï¿½ï¿½ï¿½Öµ
+    unsigned int recoveryTriggerPeriod; // ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    float restGain;              // gain when at rest for faster convergence
+    float restGyroscopeThreshold;  // rest detection: max gyro magnitude (deg/s), default 5.0
+    float restAccelerationMin;     // rest detection: min acc magnitude (g), default 0.9
+    float restAccelerationMax;     // rest detection: max acc magnitude (g), default 1.1
+    unsigned int restDebouncePeriod; // rest detection: debounce samples, default 50
+    float dynamicFeedbackScale;    // dynamic feedback: scaling factor, default 50.0
 } FusionAhrsSettings;
 
 typedef struct {
-    FusionAhrsSettings settings;  // Ëã·¨ÉèÖÃ
-    FusionQuaternion quaternion;  // µ±Ç°×ËÌ¬ËÄÔªÊý
-    FusionVector accelerometer;   // ´æ´¢µÄ¼ÓËÙ¶È¼ÆÊý¾Ý
+    FusionAhrsSettings settings;  // ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½
+    FusionQuaternion quaternion;  // ï¿½ï¿½Ç°ï¿½ï¿½Ì¬ï¿½ï¿½Ôªï¿½ï¿½
+    FusionVector accelerometer;   // ï¿½æ´¢ï¿½Ä¼ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½
 		bool initialising;
     float rampedGain;
     float rampedGainStep;
-    bool angularRateRecovery;     // ½ÇËÙÂÊ»Ö¸´±êÖ¾
-    FusionVector halfAccelerometerFeedback; // ¼ÓËÙ¶È¼Æ·´À¡Á¿(°ëÖµ)
-    bool accelerometerIgnored;    // ÊÇ·ñºöÂÔ¼ÓËÙ¶È¼ÆÊý¾Ý
-    int accelerationRecoveryTrigger; // ¼ÓËÙ¶È»Ö¸´´¥·¢Æ÷
-    int accelerationRecoveryTimeout; // ¼ÓËÙ¶È»Ö¸´³¬Ê±
+    bool angularRateRecovery;     // ï¿½ï¿½ï¿½ï¿½ï¿½Ê»Ö¸ï¿½ï¿½ï¿½Ö¾
+    FusionVector halfAccelerometerFeedback; // ï¿½ï¿½ï¿½Ù¶È¼Æ·ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Öµ)
+    bool accelerometerIgnored;    // ï¿½Ç·ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ù¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½
+    int accelerationRecoveryTrigger; // ï¿½ï¿½ï¿½Ù¶È»Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    int accelerationRecoveryTimeout; // ï¿½ï¿½ï¿½Ù¶È»Ö¸ï¿½ï¿½ï¿½Ê±
+    int restCounter;             // consecutive rest sample counter
+    bool atRest;                 // rest state flag
 } FusionAhrs;
 
 typedef struct {
-    float accelerationError;      // ¼ÓËÙ¶ÈÎó²î(¶È)
-    bool accelerometerIgnored;    // ¼ÓËÙ¶È¼ÆÊÇ·ñ±»ºöÂÔ
-    float accelerationRecoveryTrigger; // ¼ÓËÙ¶È»Ö¸´´¥·¢½ø¶È
+    float accelerationError;      // ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)
+    bool accelerometerIgnored;    // ï¿½ï¿½ï¿½Ù¶È¼ï¿½ï¿½Ç·ñ±»ºï¿½ï¿½ï¿½
+    float accelerationRecoveryTrigger; // ï¿½ï¿½ï¿½Ù¶È»Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 } FusionAhrsInternalStates;
 
 typedef struct {
 		bool initialising;
-    bool angularRateRecovery;     // ÊÇ·ñ´¦ÓÚ½ÇËÙÂÊ»Ö¸´×´Ì¬
-    bool accelerationRecovery;    // ÊÇ·ñ´¦ÓÚ¼ÓËÙ¶È»Ö¸´×´Ì¬
+    bool angularRateRecovery;     // ï¿½Ç·ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½Ê»Ö¸ï¿½×´Ì¬
+    bool accelerationRecovery;    // ï¿½Ç·ï¿½ï¿½Ú¼ï¿½ï¿½Ù¶È»Ö¸ï¿½×´Ì¬
+    bool atRest;                  // true = static, false = dynamic
 } FusionAhrsFlags;
 
-// AHRSËã·¨º¯ÊýÉùÃ÷
+// AHRSï¿½ã·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void FusionAhrsInitialise(FusionAhrs *const ahrs);
 void FusionAhrsReset(FusionAhrs *const ahrs);
 void FusionAhrsSetSettings(FusionAhrs *const ahrs, const FusionAhrsSettings *const settings);
@@ -394,38 +403,38 @@ FusionAhrsFlags FusionAhrsGetFlags(const FusionAhrs *const ahrs);
 void FusionAhrsSetHeading(FusionAhrs *const ahrs, const float heading);
 
 //------------------------------------------------------------------------------
-// ÍÓÂÝÒÇÁãÆ«Ð£ÕýËã·¨
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«Ð£ï¿½ï¿½ï¿½ã·¨
 
 typedef struct {
-    float filterCoefficient;      // ÂË²¨Æ÷ÏµÊý
-    unsigned int timeout;         // ³¬Ê±¼ÆÊý
-    unsigned int timer;           // ¼ÆÊ±Æ÷
-    FusionVector gyroscopeOffset; // ÍÓÂÝÒÇÁãÆ«¹À¼ÆÖµ
+    float filterCoefficient;      // ï¿½Ë²ï¿½ï¿½ï¿½Ïµï¿½ï¿½
+    unsigned int timeout;         // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
+    unsigned int timer;           // ï¿½ï¿½Ê±ï¿½ï¿½
+    FusionVector gyroscopeOffset; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½Öµ
 } FusionOffset;
 
 void FusionOffsetInitialise(FusionOffset *const offset, const unsigned int sampleRate);
 FusionVector FusionOffsetUpdate(FusionOffset *const offset, FusionVector gyroscope);
 
 //------------------------------------------------------------------------------
-// ÌÝ¶ÈÏÂ½µËã·¨
+// ï¿½Ý¶ï¿½ï¿½Â½ï¿½ï¿½ã·¨
 
-#define sampleFreqDef   500.0f          // Ä¬ÈÏ²ÉÑùÆµÂÊ (Hz)
-#define betaDef         0.1f            // Ä¬ÈÏËã·¨ÔöÒæ (2 * Kp)
+#define sampleFreqDef   500.0f          // Ä¬ï¿½Ï²ï¿½ï¿½ï¿½Æµï¿½ï¿½ (Hz)
+#define betaDef         0.1f            // Ä¬ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½ (2 * Kp)
 
 typedef struct {
-	float beta = betaDef;                // ³õÊ¼»¯Ëã·¨ÔöÒæ
-	float q0 = 1.0f;                     // ³õÊ¼»¯ËÄÔªÊý£¬±íÊ¾³õÊ¼×ËÌ¬ÎªË®Æ½
+	float beta = betaDef;                // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½
+	float q0 = 1.0f;                     // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê¼ï¿½ï¿½Ì¬ÎªË®Æ½
 	float q1 = 0.0f;
 	float q2 = 0.0f;
 	float q3 = 0.0f;
-	float invSampleFreq = 1.0f / sampleFreqDef; // ³õÊ¼»¯²ÉÑùÆµÂÊµÄµ¹Êý
-	float Fusion_Power = 0.4 ; //ÌÝ¶È·¨ÓëFusion½á¹ûÈÚºÏµÄÈ¨ÖØ 
+	float invSampleFreq = 1.0f / sampleFreqDef; // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ÊµÄµï¿½ï¿½ï¿½
+	float Fusion_Power = 0.4 ; //ï¿½Ý¶È·ï¿½ï¿½ï¿½Fusionï¿½ï¿½ï¿½ï¿½ÚºÏµï¿½È¨ï¿½ï¿½ 
 	float maxFusionPower = 0.5f; // ???????????
     float minFusionPower = 0.005f; // ???????????
 	
 	 
-    float fq0, fq1, fq2, fq3; // ????›¥??????????????????
-    float filterAlpha = 0.05; // ????????? (alpha), ????1?????§¹?????????????
+    float fq0, fq1, fq2, fq3; // ????ï¿½ï¿½??????????????????
+    float filterAlpha = 0.05; // ????????? (alpha), ????1?????ï¿½ï¿½?????????????
 	
 	
     float v_s0 = 0 , v_s1 = 0 , v_s2 = 0, v_s3 = 0 ; // ?????????????

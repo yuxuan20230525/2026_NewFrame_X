@@ -1,0 +1,18 @@
+{
+  "cortex-debug.openocdPath": "/usr/bin/openocd",
+  "cortex-debug.armToolchainPath": "/usr/bin",
+  "cortex-debug.showDevDebugOutput": false,
+  "debug.onTaskErrors": "stopDebug",
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.path": "clangd",
+  "clangd.arguments": [
+    "--query-driver=/usr/bin/arm-none-eabi-*",
+    "--background-index",
+    "--clang-tidy",
+    "--header-insertion=never"
+  ],
+  "files.associations": {
+    "*.h": "c",
+    "*.cpp": "cpp"
+  }
+}

@@ -294,7 +294,7 @@ class Matrixf
             return Matrixf<_cols, _rows>::zeros();
 
         Matrixf<_cols, _rows> res;
-        arm_status status = arm_mat_inverse_f32(&this->arm_mat_, &res);
+        arm_status status = arm_mat_inverse_f32(&this->arm_mat_, &res.arm_mat_);
 
         if (status == ARM_MATH_SINGULAR)
             return Matrixf<_cols, _rows>::zeros();

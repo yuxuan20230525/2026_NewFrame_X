@@ -1,7 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include "AHRS_MiddleWare.h"
+#include "AHRS_middleware.h"
 
 /**
  * @ingroup IMU_ALG

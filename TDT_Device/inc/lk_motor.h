@@ -34,6 +34,11 @@ public:
 	// 注意，以下的最大速度不能为0；
 	void Auto_ctrlPosition(float ctrlposition, float maxspeed = 1000); // 多圈位置控制 ,需要搭配motorRead_totalAngle 读电机内置的角度使用
 
+	void motorDisable(void);
+	void motorStop(void);
+	void motorEnable(void);
+	void saveZero(void);
+
 private:
 	u8 canTxBuff[8] = {0};
 	u8 readcnt = 0;

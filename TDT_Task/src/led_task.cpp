@@ -57,11 +57,12 @@ Led_Task::Led_Task()
 	taskHz = _20hz;
 
 #if USE_VISION
-	ErrorLink((u8 *)&Vision.offlineFlag, 7, LedES_BlinkTHREE, RED);
+	ErrorLink((u8 *)&vision.offlineFlag, 7, LedES_BlinkTHREE, RED);
 
 #if USE_USB_VISION
-	ErrorLink((u8 *)&Vision.USB_offline_Flag, 6, LedES_BlinkTWO, RED);
+	ErrorLink((u8 *)&vision.USB_offline_Flag, 6, LedES_BlinkTWO, RED);
 #endif
+	
 
 #endif
 

@@ -1,0 +1,17 @@
+CompileFlags:
+  Add:
+    - -isystem/usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem/usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem/usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+    - -isystem/usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem/usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem/usr/lib/arm-none-eabi/include
+  Remove:
+    - --specs=*
+    - -Werror=*
+
+Diagnostics:
+  UnusedIncludes: None
+  Suppress:
+    - drv_unknown_argument
+    - pp_including_mainfile_in_preamble

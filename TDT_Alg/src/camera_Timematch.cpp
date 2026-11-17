@@ -86,7 +86,7 @@ void CameraTM::init()
 	
 	//配置触发信号发送频率
 	//TIM1时钟频率为168MHz 发送频率 = (168M/TIM_Prescaler/TIM_Period) hz
-	TIM_TimeBaseStructure.TIM_Period = 10000-1;//设置自动重装载值 10000/1M = 10ms->100hz
+	TIM_TimeBaseStructure.TIM_Period = 6000-1;//设置自动重装载值 10000/1M = 10ms->100hz
   TIM_TimeBaseStructure.TIM_Prescaler = 168-1;//设置预分频值 168MHz/168=1MHz
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;//设置时钟分割
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;//向上计数模式
@@ -130,7 +130,7 @@ void CameraTM::run()
 	
 	//异常情况相机取帧信号清零处理
 	//如果接收到算法请求计数器清零标志位，此时相机已停止，电控计数器需清零
-//	if(vision_Recv_Struct.recieve_request_signal==1 || vision_Recv_Struct.recieve_request_signal==0)
+	if(vision_RecvStruct.syncState==1 || vision_RecvStruct.syncState==0)
 	{
 		cameraTM.recieve_frameID = 0;  
 	}
@@ -143,11 +143,7 @@ void EXTI9_5_IRQHandler(void)
 {
     if (EXTI_GetITStatus(EXTI_Line9) != RESET) 
     {		
-				cameraTM.recieve_frameID++;
-			  cameraTM.camera_yaw = boardImu->FusionAngle.yaw;
-        cameraTM.camera_pitch = boardImu->FusionAngle.pitch;
-			  cameraTM.camera_roll = boardImu->FusionAngle.roll;
-			
+
         EXTI_ClearITPendingBit(EXTI_Line9);
     }
 }

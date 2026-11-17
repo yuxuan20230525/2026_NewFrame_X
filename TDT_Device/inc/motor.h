@@ -37,7 +37,11 @@ enum MotorType
 	MT7015,
 	MG6010,
 	MG8016,
-	DM4310
+	DM4310,
+	DM8009,
+	MF7010,
+	MHF7015,
+	
 };
 
 /**
@@ -172,8 +176,8 @@ protected:
 };
 #include "DjiMotor.h"
 #include "lk_motor.h"
-#include "MT_motor.h"
-#include "dm_Motor.h"
+#include "mt_motor.h"
+#include "dm_motor.h"
 
 void MotorAllSend();  //所有电机集中发送
 void MotorAllReceive(CanRxMsg *_CanRxMsg,u8 can_x); //所有电机集中接收

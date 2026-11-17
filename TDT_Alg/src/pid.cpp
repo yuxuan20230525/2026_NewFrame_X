@@ -347,6 +347,17 @@ bool Pid::LoadCheck(int planIndex)
 	}
 }
 
+/* ff add */
+/**
+ * @brief 设置pid前馈值
+ * @prama planIndex 方案号
+ * @prama ffValue 前馈值
+ */
+void Pid::setFfValue(uint8_t planIndex, float ffValue)
+{
+    paramPtr[planIndex].advancedPara.ffValue = ffValue;
+}
+
 /**
  * @brief PID计算函数
  * @param _setValue 设定值
@@ -401,6 +412,8 @@ float Pid::Calculate(double _setValue, double _fbValue, int planIndex, float *_r
 			{
 				result *= -1;
 			}
+			/* 前馈输出 *//*ff add*/
+			result += paramPtr[planIndex].advancedPara.ffValue;
 			/* 总的输出不能超出电机给定值的范围 */
 			result = LIMIT(result, -paramPtr[planIndex].resultMax, paramPtr[planIndex].resultMax);
 			// 输出
@@ -457,11 +470,17 @@ float Pid::Calculate(double _setValue, double _fbValue, int planIndex, float *_r
 	/* 总的输出 = 比例项的输出 + 积分项的输出 + 微分项的输出 */
 	result = paramPtr[planIndex].kp * error + paramPtr[planIndex].ki * integralError + paramPtr[planIndex].kd * ((1 - paramPtr[planIndex].advancedPara.DLPFIndex) * deltaError + paramPtr[planIndex].advancedPara.DLPFIndex * lastDeltaError);
 
+	/* 前馈输出 *//* ff add */
+	result += paramPtr[planIndex].advancedPara.ffValue;
+	
 	if (this->paramPtr[planIndex].positiveFBFlag == 1)
 	{
 		result *= -1;
 	}
 	lastDeltaError = deltaError;
+//	/* 理论上这个滤波器不应该是这样吗，记录的应该不是上次的误差，而是上次的滤波输出 *//* ff：还未测试过。写shi罢了 */
+//	lastDeltaError = (1.0f - paramPtr[planIndex].advancedPara.DLPFIndex) * deltaError + paramPtr[planIndex].advancedPara.DLPFIndex * lastDeltaError;
+	
 	/* 总的输出不能超出电机给定值的范围 */
 	result = LIMIT(result, -paramPtr[planIndex].resultMax, paramPtr[planIndex].resultMax);
 	// 输出

@@ -28,13 +28,14 @@ History:
 #include "task_virtual.h"
 #include "KeyProcess.h"
 #include "can.h"
+#include "remotevt03.h"
 /**
  * @ingroup TDT_DEVICE
  * @defgroup DBUS 遥控器解算
  * @brief 该类提供了遥控器的数据解算，以及常用的重要标志位
  */
 _RC RC;
-uint8_t deforceFlag = 0;
+uint8_t deforceFlag = 1;
 uint8_t dbusOfflineFlag = 1;
 
 unsigned char sbus_rx_buffer[RC_FRAME_LENGTH]={0}; // 原始数据
@@ -269,7 +270,7 @@ void _RC::handleData(volatile const uint8_t *SBUS_buf)
 	/***鼠标X值***/
 	Key.CH[6] = ((SBUS_buf[6]) | (SBUS_buf[7] << 8)); // x
 	/***鼠标Y值***/
-	Key.CH[7] = -((SBUS_buf[8]) | (SBUS_buf[9] << 8)); // y
+	Key.CH[7] = ((SBUS_buf[8]) | (SBUS_buf[9] << 8)); // y
 	/***鼠标Z值***/
 	Key.CH[12] = ((SBUS_buf[10]) | (SBUS_buf[11] << 8)); // z
 	/***鼠标左键***/

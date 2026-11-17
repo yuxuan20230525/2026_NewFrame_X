@@ -3,17 +3,17 @@
  * @Date: 2022-11-30
  * @LastEditTime: 2022-11-30
  * @LastEditors: handsome
- * @Description: µç»úÉè¶¨ÖµÂ·¾¶¹æ»®
+ * @Description: ï¿½ï¿½ï¿½ï¿½è¶¨ÖµÂ·ï¿½ï¿½ï¿½æ»®
  */
-#include "pathPlan.h"
+#include "pathplan.h"
 
 float pathPlanCalt(PathPlan *path, float x0, float x1, float t1)
 {
     if (path->nowTime == 0)
     {
-        // ÏÞ¶¨Ìõ¼þ£ºÊ¼Ä©ËÙ¶ÈºÍÊ¼Ä©¼ÓËÙ¶È¾ùÎªÁã
+        // ï¿½Þ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼Ä©ï¿½Ù¶Èºï¿½Ê¼Ä©ï¿½ï¿½ï¿½Ù¶È¾ï¿½Îªï¿½ï¿½
         float v0 = 0, v1 = 0, a0 = 0, a1 = 0;
-        // È·¶¨²ÎÊý¼°¹Ì¶¨ÇúÏß
+        // È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½ï¿½ï¿½
         path->param[0] = x0;                                                                                                  // 0????
         path->param[1] = v0;                                                                                                  // 1????
         path->param[2] = a0 / 2;                                                                                              // 2????
@@ -21,11 +21,11 @@ float pathPlanCalt(PathPlan *path, float x0, float x1, float t1)
         path->param[4] = (30 * x0 - 30 * x1 + (14 * v1 + 16 * v0) * t1 + (3 * a0 - 2 * a1) * powf(t1, 2)) / (2 * pow(t1, 4)); // 4????
         path->param[5] = (12 * x1 - 12 * x0 - (6 * v1 + 6 * v0) * t1 - (a0 - a1) * powf(t1, 2)) / (2 * pow(t1, 5));           // 5????
     }
-    path->nowTime += path->cycle.getCycleT(); // ÀÛ¼Ó·¨»ñÈ¡×ÜÊ±¼ä
+    path->nowTime += path->cycle.getCycleT(); // ï¿½Û¼Ó·ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ê±ï¿½ï¿½
 
     float x = 0;
 
-    // ÔË¶¯¹ý³ÌÖÐ¼ÆËãÈý´Î¶àÏîÊ½µÄÖµ
+    // ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¶ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Öµ
     if (path->nowTime <= t1)
     {
         for (u8 j = 0; j < 6; j++)
@@ -33,7 +33,7 @@ float pathPlanCalt(PathPlan *path, float x0, float x1, float t1)
             x += path->param[j] * powf(path->nowTime, j);
         }
     }
-    // Ê±¼äµ½´ïÆÚÍûÊ±¼ä£¬ÓÉÓÚÄ©ËÙ¶ÈºÍÄ©¼ÓËÙ¶È¾ùÎªÁã£¬ºöÂÔÎ»ÖÃ²î£¬ÈÏÎªÒÑµ½´ïÖ¸¶¨Î»ÖÃ
+    // Ê±ï¿½äµ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½Ä©ï¿½Ù¶Èºï¿½Ä©ï¿½ï¿½ï¿½Ù¶È¾ï¿½Îªï¿½ã£¬ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã²î£¬ï¿½ï¿½Îªï¿½Ñµï¿½ï¿½ï¿½Ö¸ï¿½ï¿½Î»ï¿½ï¿½
     else
     {
         x = x1;

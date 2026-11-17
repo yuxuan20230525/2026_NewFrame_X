@@ -59,9 +59,20 @@ void NMI_Handler(void)
 /**
   * @brief  This function handles Hard Fault exception.
   */
+/* Global so the debugger can always see them (not optimized away) */
+volatile uint32_t g_cfsr;
+volatile uint32_t g_hfsr;
+volatile uint32_t g_mmfar;
+volatile uint32_t g_bfar;
+
 void HardFault_Handler(void)
 {
-	/* Go to infinite loop when Hard Fault exception occurs */
+	g_cfsr  = SCB->CFSR;   /* Configurable Fault Status Register */
+	g_hfsr  = SCB->HFSR;   /* HardFault Status Register */
+	g_mmfar = SCB->MMFAR;  /* MemManage Fault Address Register */
+	g_bfar  = SCB->BFAR;   /* BusFault Address Register */
+
+	/* Breakpoint here — inspect g_cfsr / g_hfsr / g_mmfar / g_bfar */
 	while (1)
 	{
 	}

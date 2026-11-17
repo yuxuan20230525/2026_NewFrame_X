@@ -133,12 +133,18 @@ protected:
   float accValueFector = 1;
   /// 角速度转换单位
   float gyroDpsFector = 1;
-	 const FusionAhrsSettings settings = {
-            .convention = FusionConventionNwu,
-            .gain = 0.3f,
-            .gyroscopeRange = 4000.0f, /* gyroscope range in degrees/s */
-            .accelerationRejection = 32.0f,
-            .recoveryTriggerPeriod = 100, 
+	 FusionAhrsSettings settings = {
+           .convention = FusionConventionNwu,
+            .gain = 0.1f,                      // 基础增益
+            .gyroscopeRange = 4000.0f,         /* gyroscope range in degrees/s */
+            .accelerationRejection = 10.0f,    // 10°以内信任acc，超过才拒绝
+            .recoveryTriggerPeriod = 200,      // 强制恢复周期
+            .restGain = 0.4f,                  // 和base gain一致，不跳变
+            .restGyroscopeThreshold = 50.0f,    // 静止判断：陀螺仪 < 5°/s
+            .restAccelerationMin = 0.8f,       // 静止判断：加速度 > 0.9g
+            .restAccelerationMax = 1.2f,       // 静止判断：加速度 < 1.1g
+            .restDebouncePeriod = 50,          // 静止判断：去抖采样数
+            .dynamicFeedbackScale = 60.0f,     // 动态反馈缩放因子
     };
   int index = 0; // 每个对象的索引
 public:
@@ -164,7 +170,7 @@ public:
   gyrodata gyro; ///< 角速度解算数据
 
   u8 imuValid = 0;    ///< 此Imu初始化完成以及运行正常标志位
-  float readTime = 0; // 读取imu的时间（s）
+  double readTime = 0; // IMU 采样时刻，单位 s；用 double 保留微秒精度
 
   struct AHRS_DaTa
   {
@@ -185,7 +191,8 @@ public:
 
   /// imu数据更新，包括获取值、零飘校准、数据旋转，互补滤波（AHRS）算法解算以及过圈处理
   ///@retval uint64_t 获取陀螺仪时的时间
-  void TDT_IMU_update();
+  ///@note 设为 virtual 以便外置 IMU(如 HipnucImu)用模块自带融合重写本函数; 板载 IMU 不重写, 行为不变
+  virtual void TDT_IMU_update();
 
   /// 陀螺仪的初始化。别的陀螺仪重写此函数建议包括陀螺仪初始化，并调用默认的构造函数( ImuCalc::init )
   ///@warning 默认仅进行周期始终的初始化
@@ -227,18 +234,23 @@ public:
   float local_g ; //当地重力加速度数值
   
   // Fusion_AHRS输出欧拉角
-  struct Fusion_Angle 
+  struct Fusion_Angle
   {
 	float yaw ;
 	float pitch ;
 	float roll ;
-	  
+
   }FusionAngle;
+
+  /// IMU 在线切换(失效降级)时对齐姿态零点用; 默认 0 不影响常规使用
+  float yawOffset = 0.0f;
+  float pitchOffset = 0.0f;
+  float rollOffset = 0.0f;
   
   struct fusion_temp
   {
-	  float lastyaw ;
-	  int roundnum ;
+	  float lastyaw = 0;
+	  int roundnum = 0;
 	  u8 get_localg = 0 ;
 	  FusionOffset fusionOffset ;
 	  FusionVector accelerometer ;

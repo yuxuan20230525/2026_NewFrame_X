@@ -1,40 +1,72 @@
-*
-!*/
-!*.c
-!*.h
-!*.s
-!*.cpp
-!*.lib
-!*.md
-!*.jpg
-Listings
-Objects
-!*.uvprojx
-!.gitignore
+# ============================================
+# STM32 Project .gitignore
+# ============================================
+
+# ---------- CMake build artifacts ----------
+cmake_build/
+
+# ---------- Old Make build artifacts ----------
+build/
+
+# ---------- Ozone user session state ----------
+# ozone.jdebug is kept (project debug config)
+# ozone.jdebug.user is per-user session state
+ozone.jdebug.user
+
+# ---------- Build outputs ----------
+*.o
+*.obj
+*.d
+*.map
+*.axf
+*.hex
+*.bin
+*.elf
+
+# ---------- Keil / legacy IDE artifacts ----------
+Listings/
+Objects/
 *.bak
 *.ddk
 *.edk
 *.lst
 *.lnp
 *.mpf
-*.mpj*.obj
+*.mpj
 *.omf
 *.plg
 *.rpt
 *.tmp
 *.__i
 *.crf
-*.o
-*.d
-*.axf
 *.tra
-*.dep           
-JLinkLog.txt
+*.dep
 *.iex
 *.htm
 *.sct
-*.map
 *.log
 *.uvgui.*
-*.hex
-*.json
+JLinkLog.txt
+
+# ---------- Installer packages (not part of project) ----------
+*.deb
+
+# ---------- clangd index cache ----------
+.cache/
+*.idx
+
+# ---------- OS / editor ----------
+.DS_Store
+Thumbs.db
+
+# ============================================
+# DO NOT ignore (these are project config):
+#   .vscode/launch.json
+#   .vscode/tasks.json
+#   .vscode/settings.json
+#   ozone.jdebug
+#   flash.jlink
+#   CMakeLists.txt
+#   Makefile
+#   *.code-workspace
+# ============================================

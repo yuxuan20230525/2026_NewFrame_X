@@ -14,7 +14,7 @@
   ****************************(C) COPYRIGHT 2016 DJI****************************
   */
 
-#include "AHRS_MiddleWare.h"
+#include "AHRS_middleware.h"
 #include "ahrs_lib.h"
 #include "arm_math.h"
 //#include "main.h"
